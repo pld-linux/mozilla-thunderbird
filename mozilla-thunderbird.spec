@@ -6,7 +6,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	0.8
-Release:	0.2
+Release:	0.3
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
@@ -42,7 +42,8 @@ Conflicts:	freetype = 2.1.8
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_noautoreqdep	libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libnspr4.so
+%define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libnspr4.so
+%define	_noautoprovfiles	libnspr4.so libplc4.so libplds4.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
