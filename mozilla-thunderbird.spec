@@ -41,8 +41,8 @@ poczty.
 %patch2 -p1
 
 %build
-export CFLAGS="%{optflags}"
-export CXXFLAGS="%{optflags}"
+export CFLAGS="%{rpmcflags}"
+export CXXFLAGS="%{rpmcflags}"
 export BUILD_OFFICIAL=1
 export MOZ_THUNDERBIRD=1
 
