@@ -1,18 +1,25 @@
 #
 # Conditional builds
-%bcond_with	ft218	# compile with freetype >= 2.1.8
+%bcond_with	ft218	    # compile with freetype >= 2.1.8
+%bcond_without	enigmail    # enigmail - GPG/PGP support
 #
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.0
-Release:	3
+Release:	4
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
 # Source0-md5:	232ffe434fd65f5f0284a760d6e4ba2a
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
+%if %{with enigmail} 
+Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.2.tar.gz
+# Source3-md5:	
+Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.90.0.tar.gz
+# Source4-md5:	
+%endif
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
 Patch2:		%{name}-nss.patch
@@ -62,12 +69,24 @@ poczty.
 
 %prep
 %setup -q -n mozilla
+%if %{with enigmail}
+cd extensions
+tar xvfz %{SOURCE3}
+tar xvfz %{SOURCE4}
+cd ..
+%endif
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %{?with_ft218:%patch4 -p1}
 %patch5 -p1
+
+# %if %{with enigmail}
+# mv ipc extensions/ipc
+# mv enigmail extensions/enigmail
+# %endif
 
 %build
 export CFLAGS="%{rpmcflags}"
@@ -116,6 +135,15 @@ cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 	--disable-profilesharing
 
 %{__make}
+
+%if %{with enigmail}
+   cd extensions/ipc
+   ./makemake -r
+   %{__make}
+   cd ../enigmail
+   ./makemake -r
+   %{__make}
+%endif
 
 %install
 
@@ -178,5 +206,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/chrome/pippki.jar
 %{_thunderbirddir}/chrome/toolkit.jar
 %{_thunderbirddir}/chrome/*.txt
+%if %{with enigmail}
+%{_thunderbirddir}/chrome/embed-sample.jar
+%{_thunderbirddir}/chrome/enigmail-en-US.jar
+%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar
+%{_thunderbirddir}/chrome/enigmail-skin.jar
+%{_thunderbirddir}/chrome/enigmail.jar
+%{_thunderbirddir}/chrome/enigmime.jar
+%endif
+%dir %{_thunderbirddir}/init.d
+%{_thunderbirddir}/init.d/README
 %{_pixmapsdir}/*
 %{_desktopdir}/*
