@@ -44,6 +44,9 @@ BuildRequires:	nspr-devel >= 1:4.6-0.20041030.1
 BuildRequires:	nss-devel >= 3.8
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
+%if %{with enigmail}
+BuildRequires:	/bin/ex
+%endif
 %if %{with ft218}
 Requires:	freetype >= 1:2.1.3
 %else
@@ -206,8 +209,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/chrome/pippki.jar
 %{_thunderbirddir}/chrome/toolkit.jar
 %{_thunderbirddir}/chrome/*.txt
-%if %{with enigmail}
 %{_thunderbirddir}/chrome/embed-sample.jar
+%if %{with enigmail}
 %{_thunderbirddir}/chrome/enigmail-en-US.jar
 %{_thunderbirddir}/chrome/enigmail-skin-tbird.jar
 %{_thunderbirddir}/chrome/enigmail-skin.jar
