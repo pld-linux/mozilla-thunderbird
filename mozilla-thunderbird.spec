@@ -14,10 +14,11 @@ Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
 Patch0:		%{name}-alpha-gcc3.patch
-Patch1:		%{name}-nss.patch
-Patch2:		%{name}-lib_path.patch
-Patch3:		%{name}-freetype.patch
-Patch4:		%{name}-blockimage.patch
+Patch1:		%{name}-nspr.patch
+Patch2:		%{name}-nss.patch
+Patch3:		%{name}-lib_path.patch
+Patch4:		%{name}-freetype.patch
+Patch5:		%{name}-blockimage.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 %if %{with ft218}
@@ -32,6 +33,7 @@ BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
+BuildRequires:	nspr-devel >= 1:4.6-0.20041030.1
 BuildRequires:	nss-devel >= 3.8
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
@@ -42,13 +44,14 @@ Requires:	freetype >= 2.1.3
 Requires:	freetype < 1:2.1.8
 Conflicts:	freetype = 2.1.8
 %endif
+Requires:	nspr >= 1:4.6-0.20041030.1
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
-%define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libnspr4.so
-%define	_noautoprovfiles	libnspr4.so libplc4.so libplds4.so
+%define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define	_noautoprovfiles	libplc4.so libplds4.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
@@ -62,8 +65,9 @@ poczty.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%{?with_ft218:%patch3 -p1}
-%patch4 -p1
+%patch3 -p1
+%{?with_ft218:%patch4 -p1}
+%patch5 -p1
 
 %build
 export CFLAGS="%{rpmcflags}"
@@ -104,7 +108,7 @@ cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 	--enable-xft \
 	--enable-xinerama \
 	--with-system-jpeg \
-	--without-system-nspr \
+	--with-system-nspr \
 	--with-system-png \
 	--with-system-zlib \
 	--with-pthreads \
