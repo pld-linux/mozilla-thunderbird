@@ -1,0 +1,31 @@
+--- mozilla/gfx/src/gtk/Makefile.in.orig	Mon Nov 10 13:24:51 2003
++++ mozilla/gfx/src/gtk/Makefile.in	Tue May 11 11:25:31 2004
+@@ -143,11 +143,12 @@
+ 
+ ifdef MOZ_ENABLE_GTK
+ EXTRA_DSO_LDOPTS += \
+-		$(LIBS_DIR) \
++		-L$(DIST)/lib \
+ 		-lgkgfx \
+ 		-lgfxshared_s \
+-		$(GFX_XINERAMA_LIBS) \
+ 		-lgtksuperwin \
++		$(GFX_XINERAMA_LIBS) \
++		$(LIBS_DIR) \
+ 		$(MOZ_COMPONENT_LIBS) \
+ 		$(MOZ_JS_LIBS) \
+ 		$(MOZ_UNICHARUTIL_LIBS) \
+@@ -163,10 +164,12 @@
+ endif
+ 
+ ifdef MOZ_ENABLE_GTK2
+-EXTRA_DSO_LDOPTS += $(MOZ_COMPONENT_LIBS) \
++EXTRA_DSO_LDOPTS += \
++		-L$(DIST)/lib \
+ 		-lgkgfx \
+ 		-lgfxshared_s \
+ 		$(GFX_XINERAMA_LIBS) \
++		$(MOZ_COMPONENT_LIBS) \
+ 		$(MOZ_JS_LIBS) \
+ 		$(MOZ_UNICHARUTIL_LIBS) \
+ 		$(NULL)
