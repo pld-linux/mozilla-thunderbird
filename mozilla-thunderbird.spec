@@ -14,7 +14,7 @@ Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
 Patch0:		%{name}-alpha-gcc3.patch
-Patch1:		%{name}-nspr.patch
+Patch1:		%{name}-gfx.patch
 Patch2:		%{name}-nss.patch
 Patch3:		%{name}-lib_path.patch
 Patch4:		%{name}-freetype.patch
