@@ -1,9 +1,8 @@
-# TODO: amd64 port
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	0.6
-Release:	0.1
+Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
@@ -13,6 +12,7 @@ Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-nspr.patch
 Patch2:		%{name}-nss.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
+BuildRequires:	automake
 BuildRequires:	gtk+2-devel >= 2.0.0
 BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
