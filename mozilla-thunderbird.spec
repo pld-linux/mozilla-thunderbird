@@ -25,7 +25,7 @@ Requires:	nspr >= 1:4.5.0
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_noautoreqdep	libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define		_noautoreqdep	libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
