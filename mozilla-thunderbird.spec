@@ -44,7 +44,7 @@ Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
-# mozilla and firefox provide their own versions
+# mozilla and thunderbird provide their own versions
 %define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libnspr4.so
 %define	_noautoprovfiles	libnspr4.so libplc4.so libplds4.so
 
@@ -120,7 +120,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
 	EXCLUDE_NSPR_LIBS=1
 
-install %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/mozilla-firefox
+install %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*-linux-gnu.tar.gz
 
