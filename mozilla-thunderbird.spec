@@ -1,12 +1,12 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	0.7.3
+Version:	0.8
 Release:	0.1
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	0a8f9384baecd42ad5c95fa2f2dfd660
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
+# Source0-md5:	76de1827d66ac482cfc4dd32e7b1e257
 Source1:	%{name}.desktop
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-nspr.patch
