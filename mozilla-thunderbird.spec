@@ -9,19 +9,23 @@ Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/
 # Source0-md5:	76de1827d66ac482cfc4dd32e7b1e257
 Source1:	%{name}.desktop
 Patch0:		%{name}-alpha-gcc3.patch
-Patch1:		%{name}-nspr.patch
+#Patch1:		%{name}-nspr.patch
 Patch2:		%{name}-nss.patch
+Patch3:		%{name}-lib_path.patch
+Patch4:		%{name}-freetype.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
+BuildRequires:	freetype-devel >= 1:2.1.8
 BuildRequires:	gtk+2-devel >= 2.0.0
 BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	nspr-devel >= 1:4.5.0
+#BuildRequires:	nspr-devel >= 1:4.5.0
 BuildRequires:	nss-devel >= 3.8
 BuildRequires:	pango-devel >= 1:1.1.0
-Requires:	nspr >= 1:4.5.0
+Requires:	freetype >= 1:2.1.8
+#Requires:	nspr >= 1:4.5.0
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -37,17 +41,21 @@ poczty.
 %prep
 %setup -q -n mozilla
 %patch0 -p1
-%patch1 -p1
+#%patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export CFLAGS="%{rpmcflags}"
 export CXXFLAGS="%{rpmcflags}"
 export MOZ_THUNDERBIRD=1
+export BUILD_OFFICIAL="1"
+export MOZILLA_OFFICIAL="1"
 
-cp -f /usr/share/automake/config.* build/autoconf
-cp -f /usr/share/automake/config.* nsprpub/build/autoconf
-cp -f /usr/share/automake/config.* directory/c-sdk/config/autoconf
+cp -f %{_datadir}/automake/config.* build/autoconf
+cp -f %{_datadir}/automake/config.* nsprpub/build/autoconf
+cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 %configure2_13 \
 %if %{?debug:1}0
 	--enable-debug \
@@ -77,10 +85,12 @@ cp -f /usr/share/automake/config.* directory/c-sdk/config/autoconf
 	--enable-xft \
 	--enable-xinerama \
 	--with-system-jpeg \
-	--with-system-nspr \
+	--without-system-nspr \
 	--with-system-png \
 	--with-system-zlib \
-	--with-pthreads
+	--with-pthreads \
+	--enable-single-profile \
+	--disable-profilesharing
 
 %{__make}
 
@@ -134,17 +144,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mozilla-thunderbird/chrome/US.jar
 %{_libdir}/mozilla-thunderbird/chrome/classic.jar
 %{_libdir}/mozilla-thunderbird/chrome/comm.jar
-%{_libdir}/mozilla-thunderbird/chrome/en-US-mail.jar
 %{_libdir}/mozilla-thunderbird/chrome/en-US.jar
 %{_libdir}/mozilla-thunderbird/chrome/en-unix.jar
 %{_libdir}/mozilla-thunderbird/chrome/icons
-%{_libdir}/mozilla-thunderbird/chrome/mail.jar
 %{_libdir}/mozilla-thunderbird/chrome/messenger.jar
 %{_libdir}/mozilla-thunderbird/chrome/modern.jar
 %{_libdir}/mozilla-thunderbird/chrome/offline.jar
 %{_libdir}/mozilla-thunderbird/chrome/pipnss.jar
 %{_libdir}/mozilla-thunderbird/chrome/pippki.jar
-%{_libdir}/mozilla-thunderbird/chrome/qute.jar
 %{_libdir}/mozilla-thunderbird/chrome/toolkit.jar
 %{_libdir}/mozilla-thunderbird/chrome/*.txt
 %{_pixmapsdir}/*
