@@ -71,7 +71,7 @@ cp -f /usr/share/automake/config.* directory/c-sdk/config/autoconf
 	--enable-extensions="pref,cookie,wallet" \
 	--enable-freetype2 \
 	--enable-mathml \
-	--enable-optimize="%{optflags}" \
+	--enable-optimize="%{rpmcflags}" \
 	--enable-reorder \
 	--enable-strip \
 	--enable-strip-libs \
