@@ -12,6 +12,7 @@ Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
 # Source0-md5:	76de1827d66ac482cfc4dd32e7b1e257
 Source1:	%{name}.desktop
+Source2:	%{name}.sh
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-nss.patch
 Patch2:		%{name}-lib_path.patch
@@ -42,6 +43,8 @@ Conflicts:	freetype = 2.1.8
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		_thunderbirddir		%{_libdir}/%{name}
+# mozilla and firefox provide their own versions
 %define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libnspr4.so
 %define	_noautoprovfiles	libnspr4.so libplc4.so libplds4.so
 
@@ -117,8 +120,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
 	EXCLUDE_NSPR_LIBS=1
 
-%define		_thunderbirddir		%{_libdir}/%{name}
-ln -sf %{_thunderbirddir}/thunderbird $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
+install %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/mozilla-firefox
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*-linux-gnu.tar.gz
 
