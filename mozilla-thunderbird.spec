@@ -6,7 +6,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.0
-Release:	1
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -123,6 +123,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	EXCLUDE_NSPR_LIBS=1
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
+sed -i $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird -e "s@/usr/lib/@%{_libdir}/@g"
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*-linux-gnu.tar.gz
 
