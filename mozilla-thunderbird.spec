@@ -16,9 +16,9 @@ Source1:	%{name}.desktop
 Source2:	%{name}.sh
 %if %{with enigmail} 
 Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.2.tar.gz
-# Source3-md5:	
+# Source3-md5:	4aa272b46c8cbf167dcd49a6d74cf526
 Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.90.0.tar.gz
-# Source4-md5:	
+# Source4-md5:	4f6e873e062709395f3090525e11282e
 %endif
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
