@@ -162,9 +162,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/chrome/comm.jar
 %{_thunderbirddir}/chrome/en-US.jar
 %{_thunderbirddir}/chrome/en-unix.jar
+%{_thunderbirddir}/chrome/help.jar
 %{_thunderbirddir}/chrome/icons
 %{_thunderbirddir}/chrome/messenger.jar
 %{_thunderbirddir}/chrome/modern.jar
+%{_thunderbirddir}/chrome/newsblog.jar
 %{_thunderbirddir}/chrome/offline.jar
 %{_thunderbirddir}/chrome/pipnss.jar
 %{_thunderbirddir}/chrome/pippki.jar
