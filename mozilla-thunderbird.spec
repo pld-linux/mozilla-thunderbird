@@ -46,6 +46,7 @@ BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
 %if %{with enigmail}
 BuildRequires:	/bin/ex
+BuildRequires:	/bin/csh
 %endif
 %if %{with ft218}
 Requires:	freetype >= 1:2.1.3
