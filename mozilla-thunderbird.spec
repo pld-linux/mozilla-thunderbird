@@ -6,19 +6,19 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.0
-Release:	4
+Version:	1.0.2
+Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	232ffe434fd65f5f0284a760d6e4ba2a
+# Source0-md5:	9e5b8a3edb3ced400e769dc2faa45317
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
 %if %{with enigmail} 
 Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.2.tar.gz
 # Source3-md5:	4aa272b46c8cbf167dcd49a6d74cf526
-Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.90.0.tar.gz
-# Source4-md5:	4f6e873e062709395f3090525e11282e
+Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.90.2.tar.gz
+# Source4-md5:	920f0e43e620d2c89934bd9bbf9b5d02
 %endif
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
