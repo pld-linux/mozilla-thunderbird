@@ -34,6 +34,7 @@ BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	nss-devel >= 3.8
 BuildRequires:	pango-devel >= 1:1.1.0
+BuildRequires:	sed >= 4.0
 %if %{with ft218}
 Requires:	freetype >= 1:2.1.3
 %else
