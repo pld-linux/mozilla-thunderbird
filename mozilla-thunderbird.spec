@@ -5,12 +5,12 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	0.8
-Release:	0.4
+Version:	0.9
+Release:	0.1
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
-# Source0-md5:	76de1827d66ac482cfc4dd32e7b1e257
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-%{version}-source.tar.bz2
+# Source0-md5:	38735d351e44d08dd4376d349a7d3992
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
 Patch0:		%{name}-alpha-gcc3.patch
@@ -159,11 +159,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/*.txt
 %{_thunderbirddir}/x*
 %dir %{_thunderbirddir}/chrome
-%{_thunderbirddir}/chrome/US.jar
 %{_thunderbirddir}/chrome/classic.jar
 %{_thunderbirddir}/chrome/comm.jar
 %{_thunderbirddir}/chrome/en-US.jar
-%{_thunderbirddir}/chrome/en-unix.jar
 %{_thunderbirddir}/chrome/help.jar
 %{_thunderbirddir}/chrome/icons
 %{_thunderbirddir}/chrome/messenger.jar
