@@ -20,7 +20,7 @@ BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	nspr-devel >= 1:4.5.0
 BuildRequires:	nss-devel >= 3.8
-BuildRequires:	pango-devel >= 1.1.0
+BuildRequires:	pango-devel >= 1:1.1.0
 Requires:	nspr >= 1:4.5.0
 Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
