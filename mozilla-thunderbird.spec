@@ -1,25 +1,31 @@
+# TODO: amd64 port
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	0.5
-Release:	0.2
+Version:	0.6
+Release:	0.1
 License:	MPL/LGPL
 Group:		Applications/Networking
-#source file published on mozilla site is broken.
-#Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
-Source0:	http://www.lukasz.mach.com.pl/thsnap/thunderbird-cvs-%{version}.tar.bz2
-# Source0-md5:	d809bba990fc8048ef5fbd331cf7391c
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/thunderbird-source-%{version}.tar.bz2
+# Source0-md5:	1096cea8373f94636a4b2fdeb7c13a4f
 Source1:	%{name}.desktop
 Patch0:		%{name}-alpha-gcc3.patch
-#Patch1:	%{name}-xpcom-aliasing.patch
+Patch1:		%{name}-nspr.patch
+Patch2:		%{name}-nss.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	gtk+2-devel >= 2.0.0
 BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
+BuildRequires:	nspr-devel >= 1:4.5.0
+BuildRequires:	nss-devel >= 3.8
 BuildRequires:	pango-devel >= 1.1.0
+Requires:	nspr >= 1:4.5.0
+Requires:	nss >= 3.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_noautoreqdep	libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libmozjs.so libxpcom.so libxpcom_compat.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
@@ -31,41 +37,53 @@ poczty.
 %prep
 %setup -q -n mozilla
 %patch0 -p1
-#%patch1 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
+export CFLAGS="%{optflags}"
+export CXXFLAGS="%{optflags}"
 export BUILD_OFFICIAL=1
 export MOZ_THUNDERBIRD=1
 
-cat  << EOF >.mozconfig
-mk_add_options MOZ_THUNDERBIRD="1"
-ac_add_options --with-system-jpeg
-ac_add_options --with-system-zlib
-ac_add_options --with-system-png
-ac_add_options --with-pthreads
-ac_add_options --disable-tests
-ac_add_options --disable-debug
-ac_add_options --disable-xprint
-ac_add_options --disable-ldap
-ac_add_options --disable-jsd
-ac_add_options --disable-gtktest
-ac_add_options --disable-freetypetest
-ac_add_options --disable-installer
-ac_add_options --enable-optimize="%{optflags}"
-ac_add_options --enable-crypto
-ac_add_options --enable-strip
-ac_add_options --enable-strip-libs
-ac_add_options --enable-reorder
-ac_add_options --enable-mathml
-ac_add_options --enable-xinerama
-ac_add_options --enable-extensions="pref,cookie,wallet"
-ac_add_options --enable-freetype2
-ac_add_options --enable-xft
-ac_add_options --enable-default-toolkit="gtk2"
-ac_add_options --prefix=%{_prefix}
-EOF
+cp -f /usr/share/automake/config.* build/autoconf
+cp -f /usr/share/automake/config.* nsprpub/build/autoconf
+cp -f /usr/share/automake/config.* directory/c-sdk/config/autoconf
+%configure2_13 \
+%if %{with debug}
+	--enable-debug \
+	--enable-debug-modules \
+%else
+	--disable-debug \
+	--disable-debug-modules \
+%endif
+%if %{with tests}
+	--enable-tests \
+%else
+	--disable-tests \
+%endif
+	--disable-ldap \
+	--disable-installer \
+	--disable-jsd \
+	--disable-xprint \
+	--enable-crypto \
+	--enable-default-toolkit="gtk2" \
+	--enable-extensions="pref,cookie,wallet" \
+	--enable-freetype2 \
+	--enable-mathml \
+	--enable-optimize="%{optflags}" \
+	--enable-reorder \
+	--enable-strip \
+	--enable-strip-libs \
+	--enable-xft \
+	--enable-xinerama \
+	--with-system-jpeg \
+	--with-system-nspr \
+	--with-system-png \
+	--with-system-zlib \
+	--with-pthreads
 
-%{__make} -f client.mk MOZILLA_VERSION="thunderbird" build
+%{__make}
 
 %install
 
@@ -74,7 +92,8 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 %{__make} -C xpinstall/packager \
 	MOZ_PKG_APPNAME="mozilla-thunderbird" \
-	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin"
+	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
+	EXCLUDE_NSPR_LIBS=1
 
 ln -sf %{_libdir}/mozilla-thunderbird/thunderbird $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
@@ -91,25 +110,43 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
 %dir %{_libdir}/mozilla-thunderbird
 %{_libdir}/mozilla-thunderbird/res
-%{_libdir}/mozilla-thunderbird/chrome
-%{_libdir}/mozilla-thunderbird/components
-%{_libdir}/mozilla-thunderbird/plugins
-%{_libdir}/mozilla-thunderbird/icons
+%dir %{_libdir}/mozilla-thunderbird/components
+%attr(755,root,root) %{_libdir}/mozilla-thunderbird/components/*.so
+%{_libdir}/mozilla-thunderbird/components/*.js
+%{_libdir}/mozilla-thunderbird/components/*.xpt
 %{_libdir}/mozilla-thunderbird/defaults
-%{_libdir}/mozilla-thunderbird/ipc
+%{_libdir}/mozilla-thunderbird/greprefs
+%{_libdir}/mozilla-thunderbird/icons
+%{_libdir}/mozilla-thunderbird/plugins
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/*.so
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/*.sh
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/*-bin
-%attr(755,root,root) %{_libdir}/mozilla-thunderbird/mangle
-%attr(755,root,root) %{_libdir}/mozilla-thunderbird/mozipcd
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/mozilla-xremote-client
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/reg*
-%attr(755,root,root) %{_libdir}/mozilla-thunderbird/shlibsign
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/thunderbird
+%attr(755,root,root) %{_libdir}/mozilla-thunderbird/thunderbird-config
 %attr(755,root,root) %{_libdir}/mozilla-thunderbird/TestGtkEmbed
-%{_libdir}/mozilla-thunderbird/*.chk
+%ifarch %{ix86}
+%attr(755,root,root) %{_libdir}/mozilla-thunderbird/elf-dynstr-gc
+%endif
 %{_libdir}/mozilla-thunderbird/*.txt
-%{_libdir}/mozilla-thunderbird/elf-dynstr-gc
 %{_libdir}/mozilla-thunderbird/x*
+%dir %{_libdir}/mozilla-thunderbird/chrome
+%{_libdir}/mozilla-thunderbird/chrome/US.jar
+%{_libdir}/mozilla-thunderbird/chrome/classic.jar
+%{_libdir}/mozilla-thunderbird/chrome/comm.jar
+%{_libdir}/mozilla-thunderbird/chrome/en-US-mail.jar
+%{_libdir}/mozilla-thunderbird/chrome/en-US.jar
+%{_libdir}/mozilla-thunderbird/chrome/en-unix.jar
+%{_libdir}/mozilla-thunderbird/chrome/icons
+%{_libdir}/mozilla-thunderbird/chrome/mail.jar
+%{_libdir}/mozilla-thunderbird/chrome/messenger.jar
+%{_libdir}/mozilla-thunderbird/chrome/modern.jar
+%{_libdir}/mozilla-thunderbird/chrome/offline.jar
+%{_libdir}/mozilla-thunderbird/chrome/pipnss.jar
+%{_libdir}/mozilla-thunderbird/chrome/pippki.jar
+%{_libdir}/mozilla-thunderbird/chrome/qute.jar
+%{_libdir}/mozilla-thunderbird/chrome/toolkit.jar
+%{_libdir}/mozilla-thunderbird/chrome/*.txt
 %{_pixmapsdir}/*
 %{_desktopdir}/*
