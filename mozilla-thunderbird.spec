@@ -43,7 +43,6 @@ poczty.
 %build
 export CFLAGS="%{rpmcflags}"
 export CXXFLAGS="%{rpmcflags}"
-export BUILD_OFFICIAL=1
 export MOZ_THUNDERBIRD=1
 
 cp -f /usr/share/automake/config.* build/autoconf
