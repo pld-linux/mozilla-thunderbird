@@ -50,7 +50,7 @@ cp -f /usr/share/automake/config.* build/autoconf
 cp -f /usr/share/automake/config.* nsprpub/build/autoconf
 cp -f /usr/share/automake/config.* directory/c-sdk/config/autoconf
 %configure2_13 \
-%if %{debug}
+%if %{?debug:1}0
 	--enable-debug \
 	--enable-debug-modules \
 %else
