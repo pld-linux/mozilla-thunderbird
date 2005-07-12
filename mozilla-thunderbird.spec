@@ -1,6 +1,6 @@
 #
 # Conditional builds
-%bcond_with	ft218	    # compile with freetype >= 2.1.8
+%bcond_without	ft218	    # compile with freetype < 2.1.8
 %bcond_without	enigmail    # enigmail - GPG/PGP support
 #
 Summary:	Mozilla Thunderbird - email client
