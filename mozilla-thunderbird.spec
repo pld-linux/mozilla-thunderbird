@@ -7,7 +7,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.0.2
-Release:	2
+Release:	3
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -26,6 +26,7 @@ Patch2:		%{name}-nss.patch
 Patch3:		%{name}-lib_path.patch
 Patch4:		%{name}-freetype.patch
 Patch5:		%{name}-blockimage.patch
+Patch6:		%{name}-gcc-bugs.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 %if %{with ft218}
@@ -86,6 +87,7 @@ cd ..
 %patch3 -p1
 %{?with_ft218:%patch4 -p1}
 %patch5 -p1
+%patch6 -p1
 
 # %if %{with enigmail}
 # mv ipc extensions/ipc
