@@ -6,19 +6,19 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.0.2
-Release:	3
+Version:	1.0.5
+Release:	0.1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	9e5b8a3edb3ced400e769dc2faa45317
+# Source0-md5:	e69e5ae8c8cc163ddc073061ad0c3cfa
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
 %if %{with enigmail} 
-Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.2.tar.gz
-# Source3-md5:	4aa272b46c8cbf167dcd49a6d74cf526
-Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.90.2.tar.gz
-# Source4-md5:	920f0e43e620d2c89934bd9bbf9b5d02
+Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.3.tar.gz
+# Source3-md5:	64ba4c6e3b52568468c4f6680ec7e679
+Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.92.0.tar.gz
+# Source4-md5:	50c369ce6d6fcb2d275cd30319a601ff
 %endif
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
@@ -95,8 +95,8 @@ cd ..
 # %endif
 
 %build
-export CFLAGS="%{rpmcflags}"
-export CXXFLAGS="%{rpmcflags}"
+export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
+export CXXFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
 export MOZ_THUNDERBIRD=1
 export BUILD_OFFICIAL="1"
 export MOZILLA_OFFICIAL="1"
