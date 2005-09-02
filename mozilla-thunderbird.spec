@@ -2,19 +2,20 @@
 # Conditional builds
 %bcond_without	ft218	    # compile with freetype < 2.1.8
 %bcond_without	enigmail    # enigmail - GPG/PGP support
+%bcond_without	spellcheck  # spellcheck fucntion
 #
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.0.6
-Release:	1
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
 # Source0-md5:	a0ddcc8bd5ee2c9be724b6963ad27111
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
-%if %{with enigmail} 
+%if %{with enigmail}
 Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.3.tar.gz
 # Source3-md5:	64ba4c6e3b52568468c4f6680ec7e679
 Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.92.0.tar.gz
@@ -58,6 +59,9 @@ Conflicts:	freetype = 2.1.8
 %endif
 Requires:	nspr >= 1:4.6-0.20041030.1
 Requires:	nss >= 3.8
+%if %{with spellcheck}
+Provides:	mozilla-thunderbird-spellcheck
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
@@ -71,6 +75,24 @@ Mozilla Thunderbird is an open-source,fast and portable email client.
 %description -l pl
 Mozilla Thunderbird jest open sourcowym, szybkim i przeno¶nym klientem
 poczty.
+
+%if %{with spellcheck}
+%package dictionary-en-US
+Summary:	English(US) dictionary for spellchecking
+Summary(pl):	Angielski(USA) s³ownik do sprawdzania pisowni
+Group:		Applications/Dictionaries
+Requires:	mozilla-thunderbird-spellcheck
+
+%description dictionary-en-US
+This package contains english(US) myspell-compatibile dictionary used for
+spellcheck function of mozilla-thunderbird. An alternative for this
+can be the OpenOffices dictionary.
+
+%description dictionary-en-US -l pl
+Ta paczka zawiera angielski(USA) s³ownik kompatybilny z myspell, u¿ywany
+przez funkcjê sprawdzania pisowni mozilli-thunderbird. Alternatyw± dla
+niego mo¿e byæ s³ownik OpenOffice'a.
+%endif
 
 %prep
 %setup -q -n mozilla
@@ -104,6 +126,7 @@ export MOZILLA_OFFICIAL="1"
 cp -f %{_datadir}/automake/config.* build/autoconf
 cp -f %{_datadir}/automake/config.* nsprpub/build/autoconf
 cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
+
 %configure2_13 \
 %if %{?debug:1}0
 	--enable-debug \
@@ -123,7 +146,7 @@ cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 	--disable-xprint \
 	--enable-crypto \
 	--enable-default-toolkit="gtk2" \
-	--enable-extensions="pref,cookie,wallet" \
+	--enable-extensions="pref,cookie,wallet%{?with_spellcheck:,spellcheck}" \
 	--enable-freetype2 \
 	--enable-mathml \
 	--enable-optimize="%{rpmcflags}" \
@@ -152,7 +175,6 @@ cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 %endif
 
 %install
-
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
@@ -162,7 +184,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	EXCLUDE_NSPR_LIBS=1
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
-%{__sed} -i 's@/usr/lib/@%{_libdir}/@g' $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird 
+%{__sed} -i 's@%{_prefix}/lib/@%{_libdir}/@g' $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*-linux-gnu.tar.gz
 
@@ -181,6 +203,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/components/*.so
 %{_thunderbirddir}/components/*.js
 %{_thunderbirddir}/components/*.xpt
+%if %{with spellcheck}
+%dir %{_thunderbirddir}/components/myspell
+%endif
 %{_thunderbirddir}/defaults
 %{_thunderbirddir}/greprefs
 %{_thunderbirddir}/icons
@@ -224,3 +249,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/init.d/README
 %{_pixmapsdir}/*
 %{_desktopdir}/*
+
+%if %{with spellcheck}
+%files dictionary-en-US
+%defattr(644,root,root,755)
+%{_thunderbirddir}/components/myspell/en-US.dic
+%{_thunderbirddir}/components/myspell/en-US.aff
+%endif
