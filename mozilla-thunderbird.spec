@@ -1,8 +1,8 @@
 #
 # Conditional builds
 %bcond_without	ft218	    # compile with freetype < 2.1.8
-%bcond_without	enigmail    # enigmail - GPG/PGP support
-%bcond_without	spellcheck  # spellcheck fucntion
+%bcond_without	enigmail    # don't build enigmail - GPG/PGP support
+%bcond_without	spellcheck  # build without spellcheck function
 #
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
@@ -76,23 +76,21 @@ Mozilla Thunderbird is an open-source,fast and portable email client.
 Mozilla Thunderbird jest open sourcowym, szybkim i przeno¶nym klientem
 poczty.
 
-%if %{with spellcheck}
 %package dictionary-en-US
-Summary:	English(US) dictionary for spellchecking
-Summary(pl):	Angielski(USA) s³ownik do sprawdzania pisowni
+Summary:	English (US) dictionary for spellchecking
+Summary(pl):	Angielski (USA) s³ownik do sprawdzania pisowni
 Group:		Applications/Dictionaries
 Requires:	mozilla-thunderbird-spellcheck
 
 %description dictionary-en-US
-This package contains english(US) myspell-compatibile dictionary used for
-spellcheck function of mozilla-thunderbird. An alternative for this
-can be the OpenOffices dictionary.
+This package contains English (US) myspell-compatible dictionary used
+for spellcheck function of mozilla-thunderbird. An alternative for
+this can be the OpenOffice's dictionary.
 
 %description dictionary-en-US -l pl
-Ta paczka zawiera angielski(USA) s³ownik kompatybilny z myspell, u¿ywany
-przez funkcjê sprawdzania pisowni mozilli-thunderbird. Alternatyw± dla
-niego mo¿e byæ s³ownik OpenOffice'a.
-%endif
+Ten pakiet zawiera angielski (USA) s³ownik kompatybilny z myspellem,
+u¿ywany przez funkcjê sprawdzania pisowni mozilli-thunderbird.
+Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 
 %prep
 %setup -q -n mozilla
