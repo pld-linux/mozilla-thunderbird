@@ -1,0 +1,64 @@
+Index: mozilla/widget/src/gtk2/nsWindow.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/widget/src/gtk2/nsWindow.cpp,v
+retrieving revision 1.145.2.1
+diff -d -u -p -r1.145.2.1 nsWindow.cpp
+--- mozilla/widget/src/gtk2/nsWindow.cpp	18 Aug 2005 08:11:23 -0000	1.145.2.1
++++ mozilla/widget/src/gtk2/nsWindow.cpp	24 Nov 2005 14:32:31 -0000
+@@ -148,9 +148,9 @@ static gboolean visibility_notify_event_
+                                            GdkEventVisibility *event);
+ static gboolean window_state_event_cb     (GtkWidget *widget,
+                                            GdkEventWindowState *event);
+-static void     style_set_cb              (GtkWidget *widget,
+-                                           GtkStyle *previous_style,
+-                                           gpointer data);
++static void     theme_changed_cb          (GtkSettings *settings,
++                                           GParamSpec *pspec,
++                                           nsWindow *data);
+ #ifdef __cplusplus
+ extern "C" {
+ #endif /* __cplusplus */
+@@ -372,6 +372,10 @@ nsWindow::Destroy(void)
+     mIsDestroyed = PR_TRUE;
+     mCreated = PR_FALSE;
+ 
++    g_signal_handlers_disconnect_by_func(gtk_settings_get_default(),
++                                         (gpointer)G_CALLBACK(theme_changed_cb),
++                                         this);
++
+     // ungrab if required
+     nsCOMPtr<nsIWidget> rollupWidget = do_QueryReferent(gRollupWindow);
+     if (NS_STATIC_CAST(nsIWidget *, this) == rollupWidget.get()) {
+@@ -2434,8 +2438,16 @@ nsWindow::NativeCreate(nsIWidget        
+                          G_CALLBACK(delete_event_cb), NULL);
+         g_signal_connect(G_OBJECT(mShell), "window_state_event",
+                          G_CALLBACK(window_state_event_cb), NULL);
+-        g_signal_connect(G_OBJECT(mShell), "style_set",
+-                         G_CALLBACK(style_set_cb), NULL);
++
++        g_signal_connect_after(gtk_settings_get_default(),
++                               "notify::gtk-theme-name",
++                               G_CALLBACK(theme_changed_cb), this);
++        g_signal_connect_after(gtk_settings_get_default(),
++                               "notify::gtk-key-theme-name",
++                               G_CALLBACK(theme_changed_cb), this);
++        g_signal_connect_after(gtk_settings_get_default(),
++                               "notify::gtk-font-name",
++                               G_CALLBACK(theme_changed_cb), this);
+     }
+ 
+     if (mContainer) {
+@@ -3916,11 +3928,9 @@ window_state_event_cb (GtkWidget *widget
+ 
+ /* static */
+ void
+-style_set_cb (GtkWidget *widget, GtkStyle *previous_style, gpointer data)
++theme_changed_cb (GtkSettings *settings, GParamSpec *pspec, nsWindow *data)
+ {
+-    nsWindow *window = get_window_for_gtk_widget(widget);
+-    if (window)
+-        window->ThemeChanged();
++    data->ThemeChanged();
+ }
+ 
+ //////////////////////////////////////////////////////////////////////
