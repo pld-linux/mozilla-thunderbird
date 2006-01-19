@@ -195,7 +195,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 install %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 %{__sed} -i 's@%{_prefix}/lib/@%{_libdir}/@g' $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
-tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-%{version}.en-US.linux-%{_target_cpu}.tar.gz
+tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
 install mail/app/default.xpm $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.xpm
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
