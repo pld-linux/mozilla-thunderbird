@@ -15,12 +15,10 @@ Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/
 # Source0-md5:	e6388feb0ffcd189af779f165c124b4d
 Source1:	%{name}.desktop
 Source2:	%{name}.sh
-%if %{with enigmail}
 Source3:	http://www.mozilla-enigmail.org/downloads/src/ipc-1.1.3.tar.gz
 # Source3-md5:	64ba4c6e3b52568468c4f6680ec7e679
 Source4:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.93.0.tar.gz
 # Source4-md5:	cb7126705924cb7f0de205b4ff4e28b4
-%endif
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
 Patch2:		%{name}-nss.patch
