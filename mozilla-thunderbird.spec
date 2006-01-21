@@ -11,7 +11,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5
-Release:	0.1
+Release:	0.2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -20,6 +20,7 @@ Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 # Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
+Source4:	%{name}-enigmail.manifest
 Patch0:		%{name}-alpha-gcc3.patch
 Patch1:		%{name}-gfx.patch
 Patch2:		%{name}-nss.patch
@@ -27,6 +28,7 @@ Patch3:		%{name}-lib_path.patch
 Patch4:		%{name}-blockimage.patch
 Patch5:		%{name}-gcc-bugs.patch
 Patch6:		%{name}-nopangoxft.patch
+Patch7:		%{name}-enigmail-shared.patch
 # official patches
 # certain ui operations cause prolonged hang (cpu at 100%)
 Patch100:	%{name}-bug305970.patch
@@ -94,6 +96,7 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 ##%patch4 -p1
 ##%patch5 -p1
 %patch6 -p1
+%{?with_enigmail:%patch7 -p1}
 
 # official patches
 %patch100 -p1
@@ -200,6 +203,28 @@ tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 install mail/app/default.xpm $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.xpm
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
+%if %{with enigmail}
+_enig_dir=$RPM_BUILD_ROOT%{_thunderbirddir}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
+mkdir -p $_enig_dir/chrome/
+mkdir -p $_enig_dir/components/
+mkdir -p $_enig_dir/defaults/preferences/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components/
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences/
+cp -f $RPM_BUILD_DIR/mozilla/mailnews/extensions/enigmail/package/install.rdf $_enig_dir/
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
+cp -f %{SOURCE4} $_enig_dir/chrome.manifest
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -207,8 +232,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
 %dir %{_thunderbirddir}
-%{_thunderbirddir}/res
+%dir %{_thunderbirddir}/chrome
 %dir %{_thunderbirddir}/components
+%dir %{_thunderbirddir}/extensions
+%dir %{_thunderbirddir}/init.d
+%{_thunderbirddir}/res
 %attr(755,root,root) %{_thunderbirddir}/components/*.so
 %{_thunderbirddir}/components/*.js
 %{_thunderbirddir}/components/*.xpt
@@ -218,7 +246,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/defaults
 %{_thunderbirddir}/greprefs
 %{_thunderbirddir}/icons
-#%{_thunderbirddir}/plugins
 %attr(755,root,root) %{_thunderbirddir}/*.so
 %attr(755,root,root) %{_thunderbirddir}/*.sh
 %attr(755,root,root) %{_thunderbirddir}/*-bin
@@ -226,41 +253,26 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
 %attr(755,root,root) %{_thunderbirddir}/thunderbird-config
-#%attr(755,root,root) %{_thunderbirddir}/TestGtkEmbed
-#%ifarch %{ix86}
-#%attr(755,root,root) %{_thunderbirddir}/elf-dynstr-gc
-#%endif
 %{_thunderbirddir}/*.txt
 %{_thunderbirddir}/x*
-%dir %{_thunderbirddir}/chrome
 %{_thunderbirddir}/chrome/US.jar
 %{_thunderbirddir}/chrome/classic.jar
 %{_thunderbirddir}/chrome/comm.jar
 %{_thunderbirddir}/chrome/en-US.jar
-#%{_thunderbirddir}/chrome/help.jar
 %{_thunderbirddir}/chrome/icons
 %{_thunderbirddir}/chrome/messenger.jar
-#%{_thunderbirddir}/chrome/modern.jar
 %{_thunderbirddir}/chrome/newsblog.jar
 %{_thunderbirddir}/chrome/offline.jar
-#%{_thunderbirddir}/chrome/pipnss.jar
 %{_thunderbirddir}/chrome/pippki.jar
 %{_thunderbirddir}/chrome/toolkit.jar
 %{_thunderbirddir}/chrome/*.txt
-#%{_thunderbirddir}/chrome/embed-sample.jar
-# TODO: check if we really need these
 %{_thunderbirddir}/chrome/*.manifest
-%if %{with enigmail}
-%{_thunderbirddir}/chrome/enigmail-en-US.jar
-%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar
-%{_thunderbirddir}/chrome/enigmail-skin.jar
-%{_thunderbirddir}/chrome/enigmail.jar
-%{_thunderbirddir}/chrome/enigmime.jar
-%endif
-%dir %{_thunderbirddir}/init.d
 %{_thunderbirddir}/init.d/README
 %{_thunderbirddir}/dependentlibs.list
-%{_thunderbirddir}/extensions
+%{_thunderbirddir}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+%if %{with enigmail}
+%{_thunderbirddir}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
+%endif
 %{_thunderbirddir}/updater
 %{_thunderbirddir}/updater.ini
 %{_pixmapsdir}/*
