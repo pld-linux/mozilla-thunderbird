@@ -1,6 +1,6 @@
 # TODO:
 #   - enigmail doesn't work
-#   - check -alpha-gcc3, -gfx, -blockimage, -gcc-bugs patches
+#   - check -blockimage patch
 #   - check %files
 #
 # Conditional builds
@@ -21,14 +21,11 @@ Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
-Patch0:		%{name}-alpha-gcc3.patch
-Patch1:		%{name}-gfx.patch
-Patch2:		%{name}-nss.patch
-Patch3:		%{name}-lib_path.patch
-Patch4:		%{name}-blockimage.patch
-Patch5:		%{name}-gcc-bugs.patch
-Patch6:		%{name}-nopangoxft.patch
-Patch7:		%{name}-enigmail-shared.patch
+Patch0:		%{name}-nss.patch
+Patch1:		%{name}-lib_path.patch
+Patch2:		%{name}-blockimage.patch
+Patch3:		%{name}-nopangoxft.patch
+Patch4:		%{name}-enigmail-shared.patch
 # official patches
 # certain ui operations cause prolonged hang (cpu at 100%)
 Patch100:	%{name}-bug305970.patch
@@ -89,14 +86,11 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %setup -q -n mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
-##%patch0 -p1
-##%patch1 -p1
-%patch2 -p1
+%patch0 -p1
+%patch1 -p1
+##%patch2 -p1
 %patch3 -p1
-##%patch4 -p1
-##%patch5 -p1
-%patch6 -p1
-%{?with_enigmail:%patch7 -p1}
+%{?with_enigmail:%patch4 -p1}
 
 # official patches
 %patch100 -p1
@@ -205,17 +199,17 @@ install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
 _enig_dir=$RPM_BUILD_ROOT%{_thunderbirddir}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
-mkdir -p $_enig_dir/chrome/
-mkdir -p $_enig_dir/components/
-mkdir -p $_enig_dir/defaults/preferences/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences/
-cp -f $RPM_BUILD_DIR/mozilla/mailnews/extensions/enigmail/package/install.rdf $_enig_dir/
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/
+mkdir -p $_enig_dir/chrome
+mkdir -p $_enig_dir/components
+mkdir -p $_enig_dir/defaults/preferences
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
+cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
