@@ -39,16 +39,16 @@ BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	nspr-devel >= 1:4.6-0.20041030.1
-BuildRequires:	nss-devel >= 3.8
+BuildRequires:	nspr-devel >= 1:4.6.1
+BuildRequires:	nss-devel >= 3.10.2
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
 %if %{with enigmail}
 BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
 %endif
-Requires:	nspr >= 1:4.6-0.20041030.1
-Requires:	nss >= 3.8
+Requires:	nspr >= 1:4.6.1
+Requires:	nss >= 3.10.2
 %if %{with spellcheck}
 Provides:	mozilla-thunderbird-spellcheck
 %endif
