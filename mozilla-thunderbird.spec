@@ -189,8 +189,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
 	EXCLUDE_NSPR_LIBS=1
 
-install %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
-%{__sed} -i 's@%{_prefix}/lib/@%{_libdir}/@g' $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
+%{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
