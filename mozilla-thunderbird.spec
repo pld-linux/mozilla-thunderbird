@@ -10,12 +10,12 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5
+Version:	1.5.0.2
 Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	781c1cd1a01583d9b666d8c2fe4288e6
+# Source0-md5:	
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 # Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
 Source2:	%{name}.desktop
@@ -28,9 +28,11 @@ Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
 # official patches
 # certain ui operations cause prolonged hang (cpu at 100%)
-Patch100:	%{name}-bug305970.patch
+# TODO: looks like fixed in 1.5.0.2
+#Patch100:	%{name}-bug305970.patch
 # Ctrl-Shift-Home + typing with mozInlineSpellChecker causes NULL nsCOMPtr assertion
-Patch101:	%{name}-bug304720.patch
+# TODO: looks like fixed in 1.5.0.2
+#Patch101:	%{name}-bug304720.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -93,8 +95,8 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %{?with_enigmail:%patch4 -p1}
 
 # official patches
-%patch100 -p1
-%patch101 -p1
+#%patch100 -p1
+#%patch101 -p1
 
 %build
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
@@ -245,7 +247,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/mozilla-xremote-client
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
-%attr(755,root,root) %{_thunderbirddir}/thunderbird-config
+# %attr(755,root,root) %{_thunderbirddir}/thunderbird-config
 %{_thunderbirddir}/*.txt
 %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
