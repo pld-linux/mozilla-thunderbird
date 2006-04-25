@@ -1,7 +1,8 @@
 # TODO:
-#   - enigmail doesn't work
+#   - enigmail doesn't work - still ??? 
 #   - check -blockimage patch
 #   - check %files
+#   - check patch 100 & 101
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -15,7 +16,7 @@ Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	
+# Source0-md5:	3f32b847330c9d58297147be19714962
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 # Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
 Source2:	%{name}.desktop
