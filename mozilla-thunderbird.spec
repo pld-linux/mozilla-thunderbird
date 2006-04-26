@@ -1,7 +1,8 @@
 # TODO:
-#   - enigmail doesn't work
-#   - check -alpha-gcc3, -gfx, -blockimage, -gcc-bugs patches
+#   - enigmail doesn't work - still ??? 
+#   - check -blockimage patch
 #   - check %files
+#   - check patch 100 & 101
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -10,30 +11,29 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5
+Version:	1.5.0.2
 Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	781c1cd1a01583d9b666d8c2fe4288e6
+# Source0-md5:	3f32b847330c9d58297147be19714962
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 # Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
-Patch0:		%{name}-alpha-gcc3.patch
-Patch1:		%{name}-gfx.patch
-Patch2:		%{name}-nss.patch
-Patch3:		%{name}-lib_path.patch
-Patch4:		%{name}-blockimage.patch
-Patch5:		%{name}-gcc-bugs.patch
-Patch6:		%{name}-nopangoxft.patch
-Patch7:		%{name}-enigmail-shared.patch
+Patch0:		%{name}-nss.patch
+Patch1:		%{name}-lib_path.patch
+Patch2:		%{name}-blockimage.patch
+Patch3:		%{name}-nopangoxft.patch
+Patch4:		%{name}-enigmail-shared.patch
 # official patches
 # certain ui operations cause prolonged hang (cpu at 100%)
-Patch100:	%{name}-bug305970.patch
+# TODO: looks like fixed in 1.5.0.2
+#Patch100:	%{name}-bug305970.patch
 # Ctrl-Shift-Home + typing with mozInlineSpellChecker causes NULL nsCOMPtr assertion
-Patch101:	%{name}-bug304720.patch
+# TODO: looks like fixed in 1.5.0.2
+#Patch101:	%{name}-bug304720.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -42,16 +42,16 @@ BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	nspr-devel >= 1:4.6-0.20041030.1
-BuildRequires:	nss-devel >= 3.8
+BuildRequires:	nspr-devel >= 1:4.6.1
+BuildRequires:	nss-devel >= 3.10.2
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
 %if %{with enigmail}
 BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
 %endif
-Requires:	nspr >= 1:4.6-0.20041030.1
-Requires:	nss >= 3.8
+Requires:	nspr >= 1:4.6.1
+Requires:	nss >= 3.10.2
 %if %{with spellcheck}
 Provides:	mozilla-thunderbird-spellcheck
 %endif
@@ -89,18 +89,15 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %setup -q -n mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
-##%patch0 -p1
-##%patch1 -p1
-%patch2 -p1
+%patch0 -p1
+%patch1 -p1
+##%patch2 -p1
 %patch3 -p1
-##%patch4 -p1
-##%patch5 -p1
-%patch6 -p1
-%{?with_enigmail:%patch7 -p1}
+%{?with_enigmail:%patch4 -p1}
 
 # official patches
-%patch100 -p1
-%patch101 -p1
+#%patch100 -p1
+#%patch101 -p1
 
 %build
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
@@ -195,8 +192,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
 	EXCLUDE_NSPR_LIBS=1
 
-install %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
-%{__sed} -i 's@%{_prefix}/lib/@%{_libdir}/@g' $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
+%{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
@@ -205,17 +201,17 @@ install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
 _enig_dir=$RPM_BUILD_ROOT%{_thunderbirddir}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
-mkdir -p $_enig_dir/chrome/
-mkdir -p $_enig_dir/components/
-mkdir -p $_enig_dir/defaults/preferences/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components/
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences/
-cp -f $RPM_BUILD_DIR/mozilla/mailnews/extensions/enigmail/package/install.rdf $_enig_dir/
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/
+mkdir -p $_enig_dir/chrome
+mkdir -p $_enig_dir/components
+mkdir -p $_enig_dir/defaults/preferences
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
+cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
+rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
@@ -252,7 +248,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/mozilla-xremote-client
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
-%attr(755,root,root) %{_thunderbirddir}/thunderbird-config
+# %attr(755,root,root) %{_thunderbirddir}/thunderbird-config
 %{_thunderbirddir}/*.txt
 %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
