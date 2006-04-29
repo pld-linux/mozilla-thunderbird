@@ -1,8 +1,5 @@
 # TODO:
-#   - enigmail doesn't work - still ??? 
-#   - check -blockimage patch
-#   - check %files
-#   - check patch 100 & 101
+#   - CHECK all features of enigmail
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -12,7 +9,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.2
-Release:	1
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -24,16 +21,8 @@ Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
 Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
-Patch2:		%{name}-blockimage.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
-# official patches
-# certain ui operations cause prolonged hang (cpu at 100%)
-# TODO: looks like fixed in 1.5.0.2
-#Patch100:	%{name}-bug305970.patch
-# Ctrl-Shift-Home + typing with mozInlineSpellChecker causes NULL nsCOMPtr assertion
-# TODO: looks like fixed in 1.5.0.2
-#Patch101:	%{name}-bug304720.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -91,13 +80,8 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 
 %patch0 -p1
 %patch1 -p1
-##%patch2 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
-
-# official patches
-#%patch100 -p1
-#%patch101 -p1
 
 %build
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
@@ -248,7 +232,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/mozilla-xremote-client
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
-# %attr(755,root,root) %{_thunderbirddir}/thunderbird-config
 %{_thunderbirddir}/*.txt
 %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
