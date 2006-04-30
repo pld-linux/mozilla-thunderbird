@@ -1,15 +1,17 @@
 # TODO:
 #   - CHECK all features of enigmail
+#   - LDAP support
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	spellcheck  # build without spellcheck function
+%bcond_with	ldap	    # enable e-mail address lookups in LDAP directories
 #
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.2
-Release:	2
+Release:	2.1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -127,7 +129,11 @@ ac_add_options --enable-tests
 ac_add_options --disable-tests
 %endif
 
+%if %{with ldap}
+ac_add_options --enable-ldap
+%else
 ac_add_options --disable-ldap
+%endif
 ac_add_options --disable-installer
 ac_add_options --disable-jsd
 ac_add_options --disable-xprint
