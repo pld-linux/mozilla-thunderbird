@@ -49,8 +49,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
-%define	_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
-%define	_noautoprovfiles	libplc4.so libplds4.so
+%define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define		_noautoprovfiles	libplc4.so libplds4.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
@@ -83,6 +83,8 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
+
+:> config/gcc_hidden.h
 
 %build
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
