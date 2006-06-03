@@ -50,7 +50,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
 %define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
-%define		_noautoprovfiles	libplc4.so libplds4.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
