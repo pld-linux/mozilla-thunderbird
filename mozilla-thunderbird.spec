@@ -36,6 +36,11 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 3.10.2
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
+BuildRequires:	xorg-lib-libXext-devel
+BuildRequires:	xorg-lib-libXft-devel >= 2.1
+BuildRequires:	xorg-lib-libXinerama-devel
+BuildRequires:	xorg-lib-libXp-devel
+BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
 BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
