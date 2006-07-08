@@ -24,6 +24,7 @@ Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
+Patch5:		%{name}-gcc.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -87,6 +88,7 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
+%patch5 -p1
 
 :> config/gcc_hidden.h
 
@@ -168,7 +170,7 @@ ac_add_options --disable-profilesharing
 EOF
 
 
-%{__make} -f client.mk build_all \
+%{__make} -j1 -f client.mk build_all \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
