@@ -10,7 +10,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.4
-Release:	1
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -20,6 +20,7 @@ Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
+Source5:	%{name}.png
 Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
@@ -193,7 +194,6 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
-install mail/app/default.xpm $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.xpm
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
@@ -216,6 +216,7 @@ rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
 cp -f %{SOURCE4} $_enig_dir/chrome.manifest
+cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
 
 %clean
