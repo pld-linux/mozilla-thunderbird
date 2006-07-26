@@ -10,7 +10,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.4
-Release:	2
+Release:	3
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -26,6 +26,7 @@ Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
 Patch5:		%{name}-gcc.patch
+Patch6:		%{name}-fonts.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -90,6 +91,7 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
 %patch5 -p1
+%patch6 -p1
 
 :> config/gcc_hidden.h
 
