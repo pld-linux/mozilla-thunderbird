@@ -10,7 +10,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.4
-Release:	1
+Release:	3
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -20,10 +20,13 @@ Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
+Source5:	%{name}.png
 Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
+Patch5:		%{name}-gcc.patch
+Patch6:		%{name}-fonts.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -50,7 +53,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
 %define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
-%define		_noautoprovfiles	libplc4.so libplds4.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
@@ -83,6 +85,8 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
+%patch5 -p1
+%patch6 -p1
 
 :> config/gcc_hidden.h
 
@@ -164,7 +168,7 @@ ac_add_options --disable-profilesharing
 EOF
 
 
-%{__make} -f client.mk build_all \
+%{__make} -j1 -f client.mk build_all \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
@@ -187,7 +191,6 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
-install mail/app/default.xpm $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.xpm
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
@@ -210,6 +213,7 @@ rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
 cp -f %{SOURCE4} $_enig_dir/chrome.manifest
+cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
 
 %clean
