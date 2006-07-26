@@ -48,7 +48,7 @@ BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
 %endif
 Requires:	nspr >= 1:4.6.1
-Requires:	nss >= 3.10.2
+Requires:	nss >= 1:3.10.2
 %if %{with spellcheck}
 Provides:	mozilla-thunderbird-spellcheck
 %endif
