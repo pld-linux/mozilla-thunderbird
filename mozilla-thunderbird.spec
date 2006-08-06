@@ -10,7 +10,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.5
-Release:	1
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -39,11 +39,6 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 3.10.2
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
 BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
@@ -57,7 +52,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libxpcom.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
