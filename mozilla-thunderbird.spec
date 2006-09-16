@@ -9,12 +9,12 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5.0.5
+Version:	1.5.0.7
 Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	b09d29f912c2133a75b44f4801fc62b0
+# Source0-md5:	c3933149147567471000e53dbeac7429
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
 # Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
 Source2:	%{name}.desktop
@@ -36,7 +36,7 @@ BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	nspr-devel >= 1:4.6.1
-BuildRequires:	nss-devel >= 3.10.2
+BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXext-devel
@@ -49,7 +49,7 @@ BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
 %endif
 Requires:	nspr >= 1:4.6.1
-Requires:	nss >= 1:3.10.2
+Requires:	nss >= 1:3.11.3
 %if %{with spellcheck}
 Provides:	mozilla-thunderbird-spellcheck
 %endif
