@@ -12,7 +12,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.7
-Release:	1
+Release:	1.1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -220,6 +220,9 @@ cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 
 install -d $RPM_BUILD_ROOT%{_thunderbirddir}/updates
 
+# win32 stuff
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/dirver
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -248,7 +251,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
 %{_thunderbirddir}/*.txt
-%attr(755,root,root) %{_firefoxdir}/x*
+%attr(755,root,root) %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
 %{_thunderbirddir}/chrome/classic.jar
 %{_thunderbirddir}/chrome/comm.jar
