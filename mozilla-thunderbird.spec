@@ -12,7 +12,7 @@ Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.7
-Release:	1.1
+Release:	1.2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -183,15 +183,15 @@ EOF
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
-%{__make} -C xpinstall/packager \
-	MOZ_PKG_APPNAME="mozilla-thunderbird" \
-	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
-	EXCLUDE_NSPR_LIBS=1
+%{__make} -C xpinstall/packager stage-package \
+	MOZ_PKG_APPNAME=%{name} \
+	SIGN_NSS= \
+	PKG_SKIP_STRIP=1
+
+cp -a dist/%{name} $RPM_BUILD_ROOT%{_libdir}
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
-
-tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
