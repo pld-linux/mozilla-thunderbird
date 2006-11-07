@@ -271,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/updater
 %{_thunderbirddir}/updater.ini
 %{_pixmapsdir}/*
-%{_desktopdir}/*
+%{_desktopdir}/*.desktop
 
 %if %{with spellcheck}
 %files dictionary-en-US
