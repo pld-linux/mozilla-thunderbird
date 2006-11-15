@@ -1,4 +1,5 @@
 # TODO:
+#   - use own builddir (%%setup -qc && cd mozilla)
 #   - CHECK all features of enigmail
 #
 # Conditional builds
