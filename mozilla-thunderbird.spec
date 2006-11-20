@@ -1,5 +1,4 @@
 # TODO:
-# - use own builddir (%%setup -qc && cd mozilla)
 # - CHECK all features of enigmail
 # - separate pkg for enigmail
 # - merge changes from mozilla-firefox@DEVEL
@@ -86,7 +85,8 @@ u¿ywany przez funkcjê sprawdzania pisowni mozilli-thunderbird.
 Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 
 %prep
-%setup -q -n mozilla
+%setup -q -c
+cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
 %patch0 -p1
@@ -99,6 +99,7 @@ Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 :> config/gcc_hidden.h
 
 %build
+cd mozilla
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
 export CXXFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
 
@@ -188,6 +189,8 @@ EOF
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
+
+cd mozilla
 
 %{__make} -C xpinstall/packager stage-package \
 	MOZ_PKG_APPNAME=%{name} \
