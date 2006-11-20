@@ -1,6 +1,8 @@
 # TODO:
-#   - use own builddir (%%setup -qc && cd mozilla)
-#   - CHECK all features of enigmail
+# - use own builddir (%%setup -qc && cd mozilla)
+# - CHECK all features of enigmail
+# - separate pkg for enigmail
+# - merge changes from mozilla-firefox@DEVEL
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -104,8 +106,8 @@ cp -f %{_datadir}/automake/config.* build/autoconf
 cp -f %{_datadir}/automake/config.* nsprpub/build/autoconf
 cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 
-cat << EOF > .mozconfig
-. \$topsrcdir/mail/config/mozconfig
+cat << 'EOF' > .mozconfig
+. $topsrcdir/mail/config/mozconfig
 
 export BUILD_OFFICIAL=1
 export MOZILLA_OFFICIAL=1
@@ -173,29 +175,29 @@ ac_add_options --disable-profilesharing
 
 EOF
 
-
 %{__make} -j1 -f client.mk build_all \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
 %if %{with enigmail}
-   cd mailnews/extensions/enigmail
-   ./makemake -r
-   %{__make}
+	cd mailnews/extensions/enigmail
+	./makemake -r
+	%{__make}
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
-%{__make} -C xpinstall/packager \
-	MOZ_PKG_APPNAME="mozilla-thunderbird" \
-	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
-	EXCLUDE_NSPR_LIBS=1
+%{__make} -C xpinstall/packager stage-package \
+	MOZ_PKG_APPNAME=%{name} \
+	SIGN_NSS= \
+	PKG_SKIP_STRIP=1
+
+cp -a dist/%{name} $RPM_BUILD_ROOT%{_libdir}
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
-
-tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
+ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
@@ -212,15 +214,20 @@ mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components
 mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
 cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
 cp -f %{SOURCE4} $_enig_dir/chrome.manifest
 cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
+
+install -d $RPM_BUILD_ROOT%{_thunderbirddir}/updates
+
+# win32 stuff
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/dirver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -250,7 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
 %{_thunderbirddir}/*.txt
-%{_thunderbirddir}/x*
+%attr(755,root,root) %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
 %{_thunderbirddir}/chrome/classic.jar
 %{_thunderbirddir}/chrome/comm.jar
@@ -269,6 +276,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with enigmail}
 %{_thunderbirddir}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
 %endif
+%dir %{_thunderbirddir}/updates
 %{_thunderbirddir}/updater
 %{_thunderbirddir}/updater.ini
 %{_pixmapsdir}/*
