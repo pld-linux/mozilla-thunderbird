@@ -1,5 +1,7 @@
 # TODO:
-#   - CHECK all features of enigmail
+# - CHECK all features of enigmail
+# - separate pkg for enigmail
+# - merge changes from mozilla-firefox@DEVEL
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -9,14 +11,14 @@
 Summary:	Mozilla Thunderbird - email client
 Summary(pl):	Mozilla Thunderbird - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5.0.5
+Version:	1.5.0.8
 Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	b09d29f912c2133a75b44f4801fc62b0
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.0.tar.gz
-# Source1-md5:	d326c302c1d2d68217fffcaa01ca7632
+# Source0-md5:	7b60aa806e4ea1e4708b3982adef7eae
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.1.tar.gz
+# Source1-md5:	b255e7a77ecea435934bfa1872e99f6a
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
@@ -36,20 +38,15 @@ BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	nspr-devel >= 1:4.6.1
-BuildRequires:	nss-devel >= 3.10.2
+BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
 BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
 %endif
 Requires:	nspr >= 1:4.6.1
-Requires:	nss >= 1:3.10.2
+Requires:	nss >= 1:3.11.3
 %if %{with spellcheck}
 Provides:	mozilla-thunderbird-spellcheck
 %endif
@@ -57,7 +54,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libxpcom.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 
 %description
 Mozilla Thunderbird is an open-source,fast and portable email client.
@@ -103,8 +100,8 @@ cp -f %{_datadir}/automake/config.* build/autoconf
 cp -f %{_datadir}/automake/config.* nsprpub/build/autoconf
 cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 
-cat << EOF > .mozconfig
-. \$topsrcdir/mail/config/mozconfig
+cat << 'EOF' > .mozconfig
+. $topsrcdir/mail/config/mozconfig
 
 export BUILD_OFFICIAL=1
 export MOZILLA_OFFICIAL=1
@@ -172,29 +169,29 @@ ac_add_options --disable-profilesharing
 
 EOF
 
-
 %{__make} -j1 -f client.mk build_all \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
 %if %{with enigmail}
-   cd mailnews/extensions/enigmail
-   ./makemake -r
-   %{__make}
+	cd mailnews/extensions/enigmail
+	./makemake -r
+	%{__make}
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
-%{__make} -C xpinstall/packager \
-	MOZ_PKG_APPNAME="mozilla-thunderbird" \
-	MOZILLA_BIN="\$(DIST)/bin/thunderbird-bin" \
-	EXCLUDE_NSPR_LIBS=1
+%{__make} -C xpinstall/packager stage-package \
+	MOZ_PKG_APPNAME=%{name} \
+	SIGN_NSS= \
+	PKG_SKIP_STRIP=1
+
+cp -a dist/%{name} $RPM_BUILD_ROOT%{_libdir}
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
-
-tar -xvz -C $RPM_BUILD_ROOT%{_libdir} -f dist/mozilla-thunderbird-*.tar.gz
+ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
@@ -211,15 +208,20 @@ mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components
 mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
 cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
 rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
 cp -f %{SOURCE4} $_enig_dir/chrome.manifest
 cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
+
+install -d $RPM_BUILD_ROOT%{_thunderbirddir}/updates
+
+# win32 stuff
+rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/dirver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -249,7 +251,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_thunderbirddir}/reg*
 %attr(755,root,root) %{_thunderbirddir}/thunderbird
 %{_thunderbirddir}/*.txt
-%{_thunderbirddir}/x*
+%attr(755,root,root) %{_thunderbirddir}/x*
 %{_thunderbirddir}/chrome/US.jar
 %{_thunderbirddir}/chrome/classic.jar
 %{_thunderbirddir}/chrome/comm.jar
@@ -268,10 +270,11 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with enigmail}
 %{_thunderbirddir}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
 %endif
+%dir %{_thunderbirddir}/updates
 %{_thunderbirddir}/updater
 %{_thunderbirddir}/updater.ini
 %{_pixmapsdir}/*
-%{_desktopdir}/*
+%{_desktopdir}/*.desktop
 
 %if %{with spellcheck}
 %files dictionary-en-US
