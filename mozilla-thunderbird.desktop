@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Mozilla Thunderbird
-Name[pl]=Mozilla Thunderbird
-Comment=Email client
-Comment[pl]=Klient poczty
+Name=Thunderbird Community Edition
+Name[pl]=Thunderbird Community Edition
+Comment=Email client based on Mozilla technology
+Comment[pl]=Klient poczty oparty na technologii Mozilli
 Exec=mozilla-thunderbird
 Icon=mozilla-thunderbird.xpm
 Terminal=false
