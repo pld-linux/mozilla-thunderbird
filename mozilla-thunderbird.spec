@@ -8,8 +8,8 @@
 %bcond_without	spellcheck  # build without spellcheck function
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
-Summary:	Mozilla Thunderbird - email client
-Summary(pl):	Mozilla Thunderbird - klient poczty
+Summary:	Thunderbird Community Edition - email client
+Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.9
 Release:	1
@@ -42,8 +42,8 @@ BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
 %if %{with enigmail}
-BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
+BuildRequires:	/bin/ex
 %endif
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
@@ -57,11 +57,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libxpcom.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 
 %description
-Mozilla Thunderbird is an open-source,fast and portable email client.
+Thunderbird Community Edition is an open-source,fast and portable
+email client.
 
 %description -l pl
-Mozilla Thunderbird jest open sourcowym, szybkim i przeno¶nym klientem
-poczty.
+Thunderbird Community Edition jest open sourcowym, szybkim i
+przeno¶nym klientem poczty.
 
 %package dictionary-en-US
 Summary:	English (US) dictionary for spellchecking
@@ -71,13 +72,13 @@ Requires:	mozilla-thunderbird-spellcheck
 
 %description dictionary-en-US
 This package contains English (US) myspell-compatible dictionary used
-for spellcheck function of mozilla-thunderbird. An alternative for
-this can be the OpenOffice's dictionary.
+for spellcheck function of Thunderbird Community Edition. An
+alternative for this can be the OpenOffice's dictionary.
 
 %description dictionary-en-US -l pl
 Ten pakiet zawiera angielski (USA) s³ownik kompatybilny z myspellem,
-u¿ywany przez funkcjê sprawdzania pisowni mozilli-thunderbird.
-Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
+u¿ywany przez funkcjê sprawdzania pisowni w Thunderbird Community
+Edition. Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 
 %prep
 %setup -q -n mozilla
@@ -102,13 +103,6 @@ cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
 
 cat << 'EOF' > .mozconfig
 . $topsrcdir/mail/config/mozconfig
-
-export BUILD_OFFICIAL=1
-export MOZILLA_OFFICIAL=1
-#export MOZ_THUNDERBID=1
-
-mk_add_options BUILD_OFFICIAL=1
-mk_add_options MOZILLA_OFFICIAL=1
 
 ac_add_options --prefix=%{_prefix}
 ac_add_options --exec-prefix=%{_exec_prefix}
@@ -197,9 +191,9 @@ install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
 _enig_dir=$RPM_BUILD_ROOT%{_thunderbirddir}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
-mkdir -p $_enig_dir/chrome
-mkdir -p $_enig_dir/components
-mkdir -p $_enig_dir/defaults/preferences
+install -d $_enig_dir/chrome
+install -d $_enig_dir/components
+install -d $_enig_dir/defaults/preferences
 mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome
 mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
 mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components
