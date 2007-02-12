@@ -9,7 +9,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 Summary:	Thunderbird Community Edition - email client
-Summary(pl):	Thunderbird Community Edition - klient poczty
+Summary(pl.UTF-8):   Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.9
 Release:	1
@@ -65,13 +65,13 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Thunderbird Community Edition is an open-source,fast and portable
 email client.
 
-%description -l pl
+%description -l pl.UTF-8
 Thunderbird Community Edition jest open sourcowym, szybkim i
-przeno∂nym klientem poczty.
+przeno≈õnym klientem poczty.
 
 %package dictionary-en-US
 Summary:	English (US) dictionary for spellchecking
-Summary(pl):	Angielski (USA) s≥ownik do sprawdzania pisowni
+Summary(pl.UTF-8):   Angielski (USA) s≈Çownik do sprawdzania pisowni
 Group:		Applications/Dictionaries
 Requires:	mozilla-thunderbird-spellcheck
 
@@ -80,10 +80,10 @@ This package contains English (US) myspell-compatible dictionary used
 for spellcheck function of Thunderbird Community Edition. An
 alternative for this can be the OpenOffice's dictionary.
 
-%description dictionary-en-US -l pl
-Ten pakiet zawiera angielski (USA) s≥ownik kompatybilny z myspellem,
-uøywany przez funkcjÍ sprawdzania pisowni w Thunderbird Community
-Edition. Alternatyw± dla niego moøe byÊ s≥ownik OpenOffice'a.
+%description dictionary-en-US -l pl.UTF-8
+Ten pakiet zawiera angielski (USA) s≈Çownik kompatybilny z myspellem,
+u≈ºywany przez funkcjƒô sprawdzania pisowni w Thunderbird Community
+Edition. AlternatywƒÖ dla niego mo≈ºe byƒá s≈Çownik OpenOffice'a.
 
 %prep
 %setup -q -c
