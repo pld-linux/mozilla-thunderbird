@@ -9,7 +9,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 Summary:	Thunderbird Community Edition - email client
-Summary(pl.UTF-8):   Thunderbird Community Edition - klient poczty
+Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	1.5.0.9
 Release:	1
@@ -71,7 +71,7 @@ przenośnym klientem poczty.
 
 %package dictionary-en-US
 Summary:	English (US) dictionary for spellchecking
-Summary(pl.UTF-8):   Angielski (USA) słownik do sprawdzania pisowni
+Summary(pl.UTF-8):	Angielski (USA) słownik do sprawdzania pisowni
 Group:		Applications/Dictionaries
 Requires:	mozilla-thunderbird-spellcheck
 
