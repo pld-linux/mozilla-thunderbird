@@ -11,14 +11,15 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5.0.9
-Release:	1
+%define	_rc	b2
+Version:	2.0
+Release:	0.%{rc}.1
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	bb74629a8d99a6653c5ab978cf9c6227
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.1.tar.gz
-# Source1-md5:	b255e7a77ecea435934bfa1872e99f6a
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
+# Source0-md5:	b633623c460ffef9ba805dd071729890
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.2.tar.gz
+# Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
@@ -86,11 +87,11 @@ używany przez funkcję sprawdzania pisowni w Thunderbird Community
 Edition. Alternatywą dla niego może być słownik OpenOffice'a.
 
 %prep
-%setup -q -c
+%setup -q -c -n %{name}-%{version}%{_rc}
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
-%patch0 -p1
+#%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
@@ -242,7 +243,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/components/*.js
 %{_thunderbirddir}/components/*.xpt
 %if %{with spellcheck}
-%dir %{_thunderbirddir}/components/myspell
+%dir %{_thunderbirddir}/dictionaries
 %endif
 %{_thunderbirddir}/defaults
 %{_thunderbirddir}/greprefs
@@ -262,12 +263,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/chrome/icons
 %{_thunderbirddir}/chrome/messenger.jar
 %{_thunderbirddir}/chrome/newsblog.jar
-%{_thunderbirddir}/chrome/offline.jar
 %{_thunderbirddir}/chrome/pippki.jar
 %{_thunderbirddir}/chrome/toolkit.jar
 %{_thunderbirddir}/chrome/*.txt
 %{_thunderbirddir}/chrome/*.manifest
 %{_thunderbirddir}/init.d/README
+%{_thunderbirddir}/isp
 %{_thunderbirddir}/dependentlibs.list
 %{_thunderbirddir}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
 %if %{with enigmail}
@@ -282,6 +283,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with spellcheck}
 %files dictionary-en-US
 %defattr(644,root,root,755)
-%{_thunderbirddir}/components/myspell/en-US.dic
-%{_thunderbirddir}/components/myspell/en-US.aff
+%{_thunderbirddir}/dictionaries/en-US.dic
+%{_thunderbirddir}/dictionaries/en-US.aff
 %endif
