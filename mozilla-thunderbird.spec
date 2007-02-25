@@ -81,7 +81,8 @@ u¿ywany przez funkcjê sprawdzania pisowni w Thunderbird Community
 Edition. Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 
 %prep
-%setup -q -n mozilla
+%setup -qc
+cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
 %patch0 -p1
@@ -94,6 +95,7 @@ Edition. Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 :> config/gcc_hidden.h
 
 %build
+cd mozilla
 export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
 export CXXFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
 
@@ -146,8 +148,8 @@ ac_add_options --enable-mathml
 ac_add_options --enable-optimize="%{rpmcflags}"
 ac_add_options --enable-pango
 ac_add_options --enable-reorder
-ac_add_options --enable-strip
-ac_add_options --enable-strip-libs
+ac_add_options --disable-strip
+ac_add_options --disable-strip-libs
 ac_add_options --enable-system-cairo
 ac_add_options --enable-svg
 ac_add_options --enable-xft
@@ -175,6 +177,7 @@ EOF
 
 %install
 rm -rf $RPM_BUILD_ROOT
+cd mozilla
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 %{__make} -C xpinstall/packager stage-package \
