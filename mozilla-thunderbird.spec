@@ -62,7 +62,6 @@ Provides:	mozilla-thunderbird-spellcheck
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
 %define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
 
@@ -205,32 +204,32 @@ ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
 
 %if %{with enigmail}
-_enig_dir=$RPM_BUILD_ROOT%{_thunderbirddir}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
+_enig_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
 install -d $_enig_dir/chrome
 install -d $_enig_dir/components
 install -d $_enig_dir/defaults/preferences
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail.jar $_enig_dir/chrome
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig* $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/enig* $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/libenigmime.so $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/ipc.xpt $_enig_dir/components
+mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
 cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/defaults/preferences
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-en-US.jar
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmail-skin.jar
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/chrome/enigmime.jar
-rm -rf $RPM_BUILD_ROOT%{_thunderbirddir}/components/enig*
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/libenigmime.so
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/components/ipc.xpt
+rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults/preferences
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-en-US.jar
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-skin.jar
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmime.jar
+rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/components/enig*
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/libenigmime.so
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/ipc.xpt
 cp -f %{SOURCE4} $_enig_dir/chrome.manifest
 cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
 
-install -d $RPM_BUILD_ROOT%{_thunderbirddir}/updates
+install -d $RPM_BUILD_ROOT%{_libdir}/%{name}/updates
 
 # win32 stuff
-rm -f $RPM_BUILD_ROOT%{_thunderbirddir}/dirver
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -238,56 +237,56 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
-%dir %{_thunderbirddir}
-%dir %{_thunderbirddir}/chrome
-%dir %{_thunderbirddir}/components
-%dir %{_thunderbirddir}/extensions
-%dir %{_thunderbirddir}/init.d
-%{_thunderbirddir}/res
-%attr(755,root,root) %{_thunderbirddir}/components/*.so
-%{_thunderbirddir}/components/*.js
-%{_thunderbirddir}/components/*.xpt
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/chrome
+%dir %{_libdir}/%{name}/components
+%dir %{_libdir}/%{name}/extensions
+%dir %{_libdir}/%{name}/init.d
+%{_libdir}/%{name}/res
+%attr(755,root,root) %{_libdir}/%{name}/components/*.so
+%{_libdir}/%{name}/components/*.js
+%{_libdir}/%{name}/components/*.xpt
 %if %{with spellcheck}
-%dir %{_thunderbirddir}/dictionaries
+%dir %{_libdir}/%{name}/dictionaries
 %endif
-%{_thunderbirddir}/defaults
-%{_thunderbirddir}/greprefs
-%{_thunderbirddir}/icons
-%attr(755,root,root) %{_thunderbirddir}/*.so
-%attr(755,root,root) %{_thunderbirddir}/*.sh
-%attr(755,root,root) %{_thunderbirddir}/*-bin
-%attr(755,root,root) %{_thunderbirddir}/mozilla-xremote-client
-%attr(755,root,root) %{_thunderbirddir}/reg*
-%attr(755,root,root) %{_thunderbirddir}/thunderbird
-%{_thunderbirddir}/*.txt
-%attr(755,root,root) %{_thunderbirddir}/x*
-%{_thunderbirddir}/chrome/US.jar
-%{_thunderbirddir}/chrome/classic.jar
-%{_thunderbirddir}/chrome/comm.jar
-%{_thunderbirddir}/chrome/en-US.jar
-%{_thunderbirddir}/chrome/icons
-%{_thunderbirddir}/chrome/messenger.jar
-%{_thunderbirddir}/chrome/newsblog.jar
-%{_thunderbirddir}/chrome/pippki.jar
-%{_thunderbirddir}/chrome/toolkit.jar
-%{_thunderbirddir}/chrome/*.txt
-%{_thunderbirddir}/chrome/*.manifest
-%{_thunderbirddir}/init.d/README
-%{_thunderbirddir}/isp
-%{_thunderbirddir}/dependentlibs.list
-%{_thunderbirddir}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+%{_libdir}/%{name}/defaults
+%{_libdir}/%{name}/greprefs
+%{_libdir}/%{name}/icons
+%attr(755,root,root) %{_libdir}/%{name}/*.so
+%attr(755,root,root) %{_libdir}/%{name}/*.sh
+%attr(755,root,root) %{_libdir}/%{name}/*-bin
+%attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
+%attr(755,root,root) %{_libdir}/%{name}/reg*
+%attr(755,root,root) %{_libdir}/%{name}/thunderbird
+%{_libdir}/%{name}/*.txt
+%attr(755,root,root) %{_libdir}/%{name}/x*
+%{_libdir}/%{name}/chrome/US.jar
+%{_libdir}/%{name}/chrome/classic.jar
+%{_libdir}/%{name}/chrome/comm.jar
+%{_libdir}/%{name}/chrome/en-US.jar
+%{_libdir}/%{name}/chrome/icons
+%{_libdir}/%{name}/chrome/messenger.jar
+%{_libdir}/%{name}/chrome/newsblog.jar
+%{_libdir}/%{name}/chrome/pippki.jar
+%{_libdir}/%{name}/chrome/toolkit.jar
+%{_libdir}/%{name}/chrome/*.txt
+%{_libdir}/%{name}/chrome/*.manifest
+%{_libdir}/%{name}/init.d/README
+%{_libdir}/%{name}/isp
+%{_libdir}/%{name}/dependentlibs.list
+%{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
 %if %{with enigmail}
-%{_thunderbirddir}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
 %endif
-%dir %{_thunderbirddir}/updates
-%{_thunderbirddir}/updater
-%{_thunderbirddir}/updater.ini
+%dir %{_libdir}/%{name}/updates
+%{_libdir}/%{name}/updater
+%{_libdir}/%{name}/updater.ini
 %{_pixmapsdir}/*
 %{_desktopdir}/*.desktop
 
 %if %{with spellcheck}
 %files dictionary-en-US
 %defattr(644,root,root,755)
-%{_thunderbirddir}/dictionaries/en-US.dic
-%{_thunderbirddir}/dictionaries/en-US.aff
+%{_libdir}/%{name}/dictionaries/en-US.dic
+%{_libdir}/%{name}/dictionaries/en-US.aff
 %endif
