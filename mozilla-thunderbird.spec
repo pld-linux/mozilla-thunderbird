@@ -1,19 +1,20 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate pkg for enigmail
-# - merge changes from mozilla-firefox@DEVEL
+# - merge changes from mozilla-firefox
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	spellcheck  # build without spellcheck function
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
+%define		_rc		b2
+%define		_rel	2.1
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-%define	_rc	b2
 Version:	2.0
-Release:	0.%{_rc}.2
+Release:	0.%{_rc}.%{_rel}
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
@@ -34,6 +35,7 @@ Patch6:		%{name}-fonts.patch
 # fixing symptoms only
 # https://bugzilla.mozilla.org/show_bug.cgi?id=362462
 Patch7:		mozilla-hack-gcc_4_2.patch
+Patch8:		%{name}-install.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -52,8 +54,8 @@ BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
-BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
+BuildRequires:	/bin/ex
 %endif
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
@@ -101,6 +103,7 @@ cd mozilla
 %patch5 -p1
 %patch6 -p1
 %patch7 -p2
+%patch8 -p1
 
 :> config/gcc_hidden.h
 
@@ -190,13 +193,10 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 cd mozilla
-
 %{__make} -C xpinstall/packager stage-package \
-	MOZ_PKG_APPNAME=%{name} \
-	SIGN_NSS= \
+	DESTDIR=$RPM_BUILD_ROOT \
+	MOZ_PKG_APPDIR=%{_libdir}/%{name} \
 	PKG_SKIP_STRIP=1
-
-cp -a dist/%{name} $RPM_BUILD_ROOT%{_libdir}
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
