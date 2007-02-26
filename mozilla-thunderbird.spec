@@ -13,7 +13,7 @@ Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 %define	_rc	b2
 Version:	2.0
-Release:	0.%{_rc}.1
+Release:	0.%{_rc}.2
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
@@ -30,6 +30,10 @@ Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
 Patch5:		%{name}-gcc.patch
 Patch6:		%{name}-fonts.patch
+# drop as soon as bug is fixed since it's so ugly hack
+# fixing symptoms only
+# https://bugzilla.mozilla.org/show_bug.cgi?id=362462
+Patch7:		mozilla-hack-gcc_4_2.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -97,6 +101,7 @@ cd mozilla
 %{?with_enigmail:%patch4 -p1}
 %patch5 -p1
 %patch6 -p1
+%patch7 -p2
 
 :> config/gcc_hidden.h
 
