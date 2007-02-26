@@ -1,0 +1,14 @@
+; giant hack, if you feel brave enough you can try to track it down deeper
+; https://bugzilla.mozilla.org/show_bug.cgi?id=362462
+--- mozilla/mozilla/netwerk/base/src/nsStandardURL.cpp~	2007-02-26 09:31:24.171735485 +0100
++++ mozilla/mozilla/netwerk/base/src/nsStandardURL.cpp	2007-02-26 10:04:35.679481070 +0100
+@@ -2510,6 +2510,9 @@
+ 
+     InvalidateCache();
+ 
++    if (urlType != URLTYPE_STANDARD && urlType != URLTYPE_AUTHORITY && urlType != URLTYPE_NO_AUTHORITY)
++        urlType = URLTYPE_STANDARD;
++
+     switch (urlType) {
+     case URLTYPE_STANDARD:
+         mParser = net_GetStdURLParser();
