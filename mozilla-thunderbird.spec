@@ -1,7 +1,6 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate pkg for enigmail
-# - merge changes from mozilla-firefox
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -9,7 +8,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.5
+%define		_rel	2.7
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -203,7 +202,6 @@ cd mozilla
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/chrome
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/defaults
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries $RPM_BUILD_ROOT%{_datadir}/%{name}/dictionaries
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/extensions $RPM_BUILD_ROOT%{_datadir}/%{name}/extensions
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs $RPM_BUILD_ROOT%{_datadir}/%{name}/greprefs
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/icons
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d $RPM_BUILD_ROOT%{_datadir}/%{name}/init.d
@@ -212,7 +210,6 @@ mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
 ln -s ../../share/%{name}/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome
 ln -s ../../share/%{name}/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults
 ln -s ../../share/%{name}/dictionaries $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
-ln -s ../../share/%{name}/extensions $RPM_BUILD_ROOT%{_libdir}/%{name}/extensions
 ln -s ../../share/%{name}/greprefs $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs
 ln -s ../../share/%{name}/icons $RPM_BUILD_ROOT%{_libdir}/%{name}/icons
 ln -s ../../share/%{name}/init.d $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d
@@ -225,7 +222,7 @@ ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
 
 %if %{with enigmail}
-_enig_dir=$RPM_BUILD_ROOT%{_datadir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
+_enig_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
 install -d $_enig_dir/chrome
 install -d $_enig_dir/components
 install -d $_enig_dir/defaults/preferences
@@ -254,7 +251,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-for d in chrome defaults dictionaries extensions greprefs icons init.d isp res; do
+for d in chrome defaults dictionaries greprefs icons init.d isp res; do
 	if [ -d %{_libdir}/%{name}/$d ] && [ ! -L %{_libdir}/%{name}/$d ]; then
 		install -d %{_datadir}/%{name}
 		mv %{_libdir}/%{name}/$d %{_datadir}/%{name}/$d
@@ -284,7 +281,6 @@ exit 0
 %{_libdir}/%{name}/chrome
 %{_libdir}/%{name}/defaults
 %{_libdir}/%{name}/dictionaries
-%{_libdir}/%{name}/extensions
 %{_libdir}/%{name}/greprefs
 %{_libdir}/%{name}/icons
 %{_libdir}/%{name}/init.d
@@ -307,10 +303,10 @@ exit 0
 %{_datadir}/%{name}/isp
 %{_datadir}/%{name}/res
 
-%dir %{_datadir}/%{name}/extensions
-%{_datadir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+%dir %{_libdir}/%{name}/extensions
+%{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
 %if %{with enigmail}
-%{_datadir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
 %endif
 
 %if %{with spellcheck}
