@@ -9,7 +9,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.1
+%define		_rel	2.3
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -237,6 +237,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
+%attr(755,root,root) %{_bindir}/thunderbird
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/chrome
 %dir %{_libdir}/%{name}/components
