@@ -9,7 +9,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.3
+%define		_rel	2.5
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -190,7 +190,8 @@ EOF
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}} \
+	$RPM_BUILD_ROOT%{_datadir}/%{name}
 
 cd mozilla
 %{__make} -C xpinstall/packager stage-package \
@@ -198,13 +199,33 @@ cd mozilla
 	MOZ_PKG_APPDIR=%{_libdir}/%{name} \
 	PKG_SKIP_STRIP=1
 
+# move arch independant ones to datadir
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/chrome
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/defaults
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries $RPM_BUILD_ROOT%{_datadir}/%{name}/dictionaries
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/extensions $RPM_BUILD_ROOT%{_datadir}/%{name}/extensions
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs $RPM_BUILD_ROOT%{_datadir}/%{name}/greprefs
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/icons
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d $RPM_BUILD_ROOT%{_datadir}/%{name}/init.d
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/isp $RPM_BUILD_ROOT%{_datadir}/%{name}/isp
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
+ln -s ../../share/%{name}/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome
+ln -s ../../share/%{name}/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults
+ln -s ../../share/%{name}/dictionaries $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
+ln -s ../../share/%{name}/extensions $RPM_BUILD_ROOT%{_libdir}/%{name}/extensions
+ln -s ../../share/%{name}/greprefs $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs
+ln -s ../../share/%{name}/icons $RPM_BUILD_ROOT%{_libdir}/%{name}/icons
+ln -s ../../share/%{name}/init.d $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d
+ln -s ../../share/%{name}/isp $RPM_BUILD_ROOT%{_libdir}/%{name}/isp
+ln -s ../../share/%{name}/res $RPM_BUILD_ROOT%{_libdir}/%{name}/res
+
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 
-install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/mozilla-thunderbird.desktop
+install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
 
 %if %{with enigmail}
-_enig_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
+_enig_dir=$RPM_BUILD_ROOT%{_datadir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
 install -d $_enig_dir/chrome
 install -d $_enig_dir/components
 install -d $_enig_dir/defaults/preferences
@@ -226,33 +247,30 @@ cp -f %{SOURCE4} $_enig_dir/chrome.manifest
 cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
 %endif
 
-install -d $RPM_BUILD_ROOT%{_libdir}/%{name}/updates
-
 # win32 stuff
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre
+for d in chrome defaults dictionaries extensions greprefs icons init.d isp res; do
+	if [ -d %{_libdir}/%{name}/$d ] && [ ! -L %{_libdir}/%{name}/$d ]; then
+		install -d %{_datadir}/%{name}
+		mv %{_libdir}/%{name}/$d %{_datadir}/%{name}/$d
+	fi
+done
+exit 0
+
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
 %attr(755,root,root) %{_bindir}/thunderbird
 %dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/chrome
 %dir %{_libdir}/%{name}/components
-%dir %{_libdir}/%{name}/extensions
-%dir %{_libdir}/%{name}/init.d
-%{_libdir}/%{name}/res
 %attr(755,root,root) %{_libdir}/%{name}/components/*.so
 %{_libdir}/%{name}/components/*.js
 %{_libdir}/%{name}/components/*.xpt
-%if %{with spellcheck}
-%dir %{_libdir}/%{name}/dictionaries
-%endif
-%{_libdir}/%{name}/defaults
-%{_libdir}/%{name}/greprefs
-%{_libdir}/%{name}/icons
 %attr(755,root,root) %{_libdir}/%{name}/*.so
 %attr(755,root,root) %{_libdir}/%{name}/*.sh
 %attr(755,root,root) %{_libdir}/%{name}/*-bin
@@ -261,33 +279,43 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/thunderbird
 %{_libdir}/%{name}/*.txt
 %attr(755,root,root) %{_libdir}/%{name}/x*
-%{_libdir}/%{name}/chrome/US.jar
-%{_libdir}/%{name}/chrome/classic.jar
-%{_libdir}/%{name}/chrome/comm.jar
-%{_libdir}/%{name}/chrome/en-US.jar
-%{_libdir}/%{name}/chrome/icons
-%{_libdir}/%{name}/chrome/messenger.jar
-%{_libdir}/%{name}/chrome/newsblog.jar
-%{_libdir}/%{name}/chrome/pippki.jar
-%{_libdir}/%{name}/chrome/toolkit.jar
-%{_libdir}/%{name}/chrome/*.txt
-%{_libdir}/%{name}/chrome/*.manifest
-%{_libdir}/%{name}/init.d/README
+
+# symlinks
+%{_libdir}/%{name}/chrome
+%{_libdir}/%{name}/defaults
+%{_libdir}/%{name}/dictionaries
+%{_libdir}/%{name}/extensions
+%{_libdir}/%{name}/greprefs
+%{_libdir}/%{name}/icons
+%{_libdir}/%{name}/init.d
 %{_libdir}/%{name}/isp
+%{_libdir}/%{name}/res
+
 %{_libdir}/%{name}/dependentlibs.list
-%{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
-%if %{with enigmail}
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
-%endif
-%dir %{_libdir}/%{name}/updates
 %{_libdir}/%{name}/updater
 %{_libdir}/%{name}/updater.ini
-%{_pixmapsdir}/*
+%{_pixmapsdir}/*.png
 %{_desktopdir}/*.desktop
+
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/chrome
+%{_datadir}/%{name}/defaults
+%dir %{_datadir}/%{name}/dictionaries
+%{_datadir}/%{name}/greprefs
+%{_datadir}/%{name}/icons
+%{_datadir}/%{name}/init.d
+%{_datadir}/%{name}/isp
+%{_datadir}/%{name}/res
+
+%dir %{_datadir}/%{name}/extensions
+%{_datadir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+%if %{with enigmail}
+%{_datadir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
+%endif
 
 %if %{with spellcheck}
 %files dictionary-en-US
 %defattr(644,root,root,755)
-%{_libdir}/%{name}/dictionaries/en-US.dic
-%{_libdir}/%{name}/dictionaries/en-US.aff
+%{_datadir}/%{name}/dictionaries/en-US.dic
+%{_datadir}/%{name}/dictionaries/en-US.aff
 %endif
