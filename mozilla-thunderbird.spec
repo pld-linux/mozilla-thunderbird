@@ -64,7 +64,7 @@ Provides:	mozilla-thunderbird-spellcheck
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so libxpcom_core.so
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
 %define		_noautoprovfiles	%{_libdir}/%{name}/components
 
 %description
