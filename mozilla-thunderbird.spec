@@ -8,7 +8,7 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.7
+%define		_rel	2.8
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
