@@ -173,6 +173,8 @@
  s%@MOZ_GTK2_CFLAGS@%$MOZ_GTK2_CFLAGS%g
  s%@MOZ_GTK2_LIBS@%$MOZ_GTK2_LIBS%g
  s%@HOST_MOC@%$HOST_MOC%g
+--- firefox-2.0+0dfsg.orig/configure.in
++++ firefox-2.0+0dfsg/configure.in
 @@ -3840,6 +3870,19 @@
  
  fi # SKIP_LIBRARY_CHECKS
