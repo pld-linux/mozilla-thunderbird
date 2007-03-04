@@ -207,22 +207,16 @@
  MOZ_NATIVE_ZLIB	= @SYSTEM_ZLIB@
  MOZ_NATIVE_JPEG	= @SYSTEM_JPEG@
  MOZ_NATIVE_PNG	= @SYSTEM_PNG@
-#--- firefox-2.0+0dfsg.orig/debian/firefox.links
-#+++ firefox-2.0+0dfsg/debian/firefox.links
-#@@ -0,0 +1,16 @@
-#+/usr/lib/firefox/firefox /usr/bin/mozilla-firefox
-#+/usr/lib/firefox/firefox /usr/bin/firefox
-#+/usr/lib/firefox /usr/lib/mozilla-firefox
-#+/usr/share/man/man1/firefox.1.gz /usr/share/man/man1/mozilla-firefox.1.gz
-#+/usr/share/pixmaps/firefox.png /usr/share/pixmaps/mozilla-firefox.png 
-#+/etc/firefox/pref /usr/share/firefox/defaults/syspref
-#+/etc/firefox/profile /usr/share/firefox/defaults/profile
-#+
-#+/usr/share/firefox/searchplugins /usr/lib/firefox/searchplugins
-#+/usr/share/firefox/icons /usr/lib/firefox/icons
-#+/usr/share/firefox/res /usr/lib/firefox/res
-#+/usr/share/firefox/chrome /usr/lib/firefox/chrome
-#+/usr/share/firefox/defaults /usr/lib/firefox/defaults
-#+/usr/share/firefox/greprefs /usr/lib/firefox/greprefs
-#+
-#+/usr/share/myspell/dicts /usr/lib/firefox/dictionaries
+--- mozilla/toolkit/content/inlineSpellCheckUI.js~	2006-11-27 23:43:52.000000000 +0200
++++ mozilla/toolkit/content/inlineSpellCheckUI.js	2007-03-05 00:41:13.030876638 +0200
+@@ -202,6 +166,10 @@
+     for (var i = 0; i < list.length; i ++) {
+       // get the display name for this dictionary
+       isoStrArray = list[i].split("-");
++	  // if we can't split by Mozilla locale names (en-US), try system separator (en_US)
++	  if (isoStrArray.length < 2) {
++		  isoStrArray = list[i].split("_");
++	  }
+       var displayName = "";
+       if (this.mLanguageBundle && isoStrArray[0]) {
+         try {
