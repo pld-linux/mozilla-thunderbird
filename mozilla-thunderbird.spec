@@ -4,11 +4,10 @@
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
-%bcond_without	spellcheck  # build without spellcheck function
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.9
+%define		_rel	2.10
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -24,7 +23,6 @@ Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
 Source5:	%{name}.png
-Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
@@ -35,6 +33,7 @@ Patch6:		%{name}-fonts.patch
 # https://bugzilla.mozilla.org/show_bug.cgi?id=362462
 Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
+Patch9:		mozilla-firefox-myspell.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -43,6 +42,7 @@ BuildRequires:	libIDL-devel >= 0.8.0
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
+BuildRequires:	myspell-devel
 BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
@@ -53,14 +53,12 @@ BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
-BuildRequires:	/bin/csh
-BuildRequires:	/bin/ex
+#BuildRequires:	/bin/csh
+#BuildRequires:	/bin/ex
 %endif
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
-%if %{with spellcheck}
-Provides:	mozilla-thunderbird-spellcheck
-%endif
+Obsoletes:	mozilla-thunderbird-dictionary-en-US
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # mozilla and thunderbird provide their own versions
@@ -75,28 +73,10 @@ email client.
 Thunderbird Community Edition jest open sourcowym, szybkim i
 przenośnym klientem poczty.
 
-%package dictionary-en-US
-Summary:	English (US) dictionary for spellchecking
-Summary(pl.UTF-8):	Angielski (USA) słownik do sprawdzania pisowni
-Group:		Applications/Dictionaries
-Requires:	mozilla-thunderbird-spellcheck
-
-%description dictionary-en-US
-This package contains English (US) myspell-compatible dictionary used
-for spellcheck function of Thunderbird Community Edition. An
-alternative for this can be the OpenOffice's dictionary.
-
-%description dictionary-en-US -l pl.UTF-8
-Ten pakiet zawiera angielski (USA) słownik kompatybilny z myspellem,
-używany przez funkcję sprawdzania pisowni w Thunderbird Community
-Edition. Alternatywą dla niego może być słownik OpenOffice'a.
-
 %prep
 %setup -q -c -n %{name}-%{version}%{_rc}
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
-
-#%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
@@ -104,6 +84,7 @@ cd mozilla
 %patch6 -p1
 %patch7 -p2
 %patch8 -p1
+%patch9 -p1
 
 :> config/gcc_hidden.h
 
@@ -156,7 +137,7 @@ ac_add_options --disable-xprint
 ac_add_options --enable-canvas
 ac_add_options --enable-crypto
 ac_add_options --enable-default-toolkit="gtk2"
-ac_add_options --enable-extensions="pref,cookie,wallet%{?with_spellcheck:,spellcheck}"
+ac_add_options --enable-extensions="pref,cookie,wallet,spellcheck"
 ac_add_options --enable-mathml
 ac_add_options --enable-optimize="%{rpmcflags}"
 ac_add_options --enable-pango
@@ -164,6 +145,7 @@ ac_add_options --enable-reorder
 ac_add_options --disable-strip
 ac_add_options --disable-strip-libs
 ac_add_options --enable-system-cairo
+ac_add_options --enable-system-myspell
 ac_add_options --enable-svg
 ac_add_options --enable-xft
 ac_add_options --enable-xinerama
@@ -202,7 +184,6 @@ cd mozilla
 # move arch independant ones to datadir
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/chrome
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/defaults
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries $RPM_BUILD_ROOT%{_datadir}/%{name}/dictionaries
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs $RPM_BUILD_ROOT%{_datadir}/%{name}/greprefs
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/icons
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d $RPM_BUILD_ROOT%{_datadir}/%{name}/init.d
@@ -210,12 +191,14 @@ mv $RPM_BUILD_ROOT%{_libdir}/%{name}/isp $RPM_BUILD_ROOT%{_datadir}/%{name}/isp
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
 ln -s ../../share/%{name}/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome
 ln -s ../../share/%{name}/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults
-ln -s ../../share/%{name}/dictionaries $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
 ln -s ../../share/%{name}/greprefs $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs
 ln -s ../../share/%{name}/icons $RPM_BUILD_ROOT%{_libdir}/%{name}/icons
 ln -s ../../share/%{name}/init.d $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d
 ln -s ../../share/%{name}/isp $RPM_BUILD_ROOT%{_libdir}/%{name}/isp
 ln -s ../../share/%{name}/res $RPM_BUILD_ROOT%{_libdir}/%{name}/res
+
+rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
+ln -s %{_datadir}/myspell $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
@@ -252,7 +235,10 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-for d in chrome defaults dictionaries greprefs icons init.d isp res; do
+if [ -d %{_libdir}/%{name}/dictionaries ] && [ ! -L %{_libdir}/%{name}/dictionaries ]; then
+	mv -v %{_libdir}/%{name}/dictionaries{,.rpmsave}
+fi
+for d in chrome defaults greprefs icons init.d isp res; do
 	if [ -d %{_libdir}/%{name}/$d ] && [ ! -L %{_libdir}/%{name}/$d ]; then
 		install -d %{_datadir}/%{name}
 		mv %{_libdir}/%{name}/$d %{_datadir}/%{name}/$d
@@ -297,7 +283,6 @@ exit 0
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/chrome
 %{_datadir}/%{name}/defaults
-%dir %{_datadir}/%{name}/dictionaries
 %{_datadir}/%{name}/greprefs
 %{_datadir}/%{name}/icons
 %{_datadir}/%{name}/init.d
@@ -308,11 +293,4 @@ exit 0
 %{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
 %if %{with enigmail}
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
-%endif
-
-%if %{with spellcheck}
-%files dictionary-en-US
-%defattr(644,root,root,755)
-%{_datadir}/%{name}/dictionaries/en-US.dic
-%{_datadir}/%{name}/dictionaries/en-US.aff
 %endif
