@@ -52,10 +52,6 @@ BuildRequires:	xorg-lib-libXft-devel >= 2.1
 BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	xorg-lib-libXt-devel
-%if %{with enigmail}
-#BuildRequires:	/bin/csh
-#BuildRequires:	/bin/ex
-%endif
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
