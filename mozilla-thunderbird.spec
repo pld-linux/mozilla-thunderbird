@@ -8,12 +8,13 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.14
+%define		_rel	2.15
 %define		_enigmail_ver	0.94.2
+%define		_ver	2.0
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	2.0
+Version:	%{_ver}
 Release:	0.%{_rc}.%{_rel}
 License:	MPL/LGPL
 Group:		Applications/Networking
@@ -92,7 +93,7 @@ Main Features
 - OpenPGP key management interface
 
 %prep
-%setup -q -c -n %{name}-%{version}%{_rc}
+%setup -q -c -n %{name}-%{_ver}%{_rc}
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 %patch1 -p1
