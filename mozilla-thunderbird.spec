@@ -1,13 +1,14 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate pkg for enigmail
+# - enigmail not compatible
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.10
+%define		_rel	2.14
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -33,7 +34,7 @@ Patch6:		%{name}-fonts.patch
 # https://bugzilla.mozilla.org/show_bug.cgi?id=362462
 Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
-Patch9:		mozilla-firefox-myspell.patch
+Patch9:		%{name}-myspell.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
