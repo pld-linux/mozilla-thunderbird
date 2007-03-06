@@ -1,7 +1,7 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate spec for enigmail
-# - enigmail not compatible with 2.0
+# - enigmail says it's not compatible with thunderbird 2.0, while home page says it is.
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -9,14 +9,15 @@
 #
 %define		_rc		b2
 %define		_ver	2.0
+%define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.2
 
-%define		_rel	2.16
+%define		_rel	2.18
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{_ver}
-Release:	0.%{_rc}.%{_rel}
+Release:	%{_release}
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
@@ -38,6 +39,7 @@ Patch6:		%{name}-fonts.patch
 Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
 Patch9:		%{name}-myspell.patch
+Patch10:	%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -79,11 +81,12 @@ przenośnym klientem poczty.
 
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
-License:	MPL/LGPL
 Version:	%{_enigmail_ver}
 Release:	%{_rel}
+License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
+Requires:	%{name} = %{version}-%{_release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
@@ -110,6 +113,7 @@ cd mozilla
 %patch7 -p2
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 :> config/gcc_hidden.h
 
