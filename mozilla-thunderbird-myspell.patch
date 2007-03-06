@@ -215,24 +215,24 @@
        isoStrArray = dictList[i].split("-");
 +      // if we can't split by Mozilla locale names (en-US), try system separator (en_US)
 +      if (isoStrArray.length < 2) {
-+        isoStrArray = list[i].split("_");
++        isoStrArray = dictList[i].split("_");
 +      }
  
        if (languageBundle && isoStrArray[0])
          langLabel = languageBundle.getString(isoStrArray[0].toLowerCase());
-#--- mozilla/mail/components/compose/content/MsgComposeCommands.js~	2007-01-16 02:37:55.000000000 +0200
-#+++ mozilla/mail/components/compose/content/MsgComposeCommands.js	2007-03-05 04:37:41.320669980 +0200
-#@@ -2235,6 +2235,10 @@
-#     {
-#       langId = dictList[i];
-#       isoStrArray = dictList[i].split("-");
-#+      // if we can't split by Mozilla locale names (en-US), try system separator (en_US)
-#+      if (isoStrArray.length < 2) {
-#+        isoStrArray = list[i].split("_");
-#+      }
-# 
-#       if (languageBundle && isoStrArray[0])
-#         langLabel = languageBundle.getString(isoStrArray[0].toLowerCase());
+--- mozilla/mail/components/compose/content/MsgComposeCommands.js~	2007-01-16 02:37:55.000000000 +0200
++++ mozilla/mail/components/compose/content/MsgComposeCommands.js	2007-03-05 04:37:41.320669980 +0200
+@@ -2235,6 +2235,10 @@
+     {
+       langId = dictList[i];
+       isoStrArray = dictList[i].split("-");
++      // if we can't split by Mozilla locale names (en-US), try system separator (en_US)
++      if (isoStrArray.length < 2) {
++        isoStrArray = dictList[i].split("_");
++      }
+ 
+       if (languageBundle && isoStrArray[0])
+         langLabel = languageBundle.getString(isoStrArray[0].toLowerCase());
 --- mozilla/mail/components/preferences/compose.js~	2006-11-28 03:06:50.000000000 +0200
 +++ mozilla/mail/components/preferences/compose.js	2007-03-05 04:39:00.815779020 +0200
 @@ -337,6 +337,10 @@
@@ -241,7 +241,7 @@
          isoStrArray = dictList[i].split("-");
 +        // if we can't split by Mozilla locale names (en-US), try system separator (en_US)
 +        if (isoStrArray.length < 2) {
-+          isoStrArray = list[i].split("_");
++          isoStrArray = dictList[i].split("_");
 +        }
  
          if (languageBundle && isoStrArray[0])
