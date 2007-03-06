@@ -1,0 +1,36 @@
+--- mozilla/extensions/cookie/resources/content/cookieContextOverlay.xul	2004-06-20 23:55:12.000000000 +0200
++++ mozilla/extensions/cookie/resources/content/cookieContextOverlay.xul.new	2004-10-26 18:57:09.671317480 +0200
+@@ -122,33 +122,4 @@
+ 
+    ]]>
+   </script>         
+-
+-  <!-- context menu -->
+-  <popup id="contentAreaContextMenu">
+-    <menuitem id="context-blockimage"
+-              label="&blockImageCmd.label;"
+-              accesskey=""
+-              oncommand="cookieContextMenu.blockImage();"
+-              insertafter="context-viewimage"/>
+-    <menuitem id="context-unblockimage"
+-              label="&unblockImageCmd.label;"
+-              accesskey=""
+-              oncommand="cookieContextMenu.unblockImage();"
+-              insertafter="context-viewimage"/>
+-  </popup>
+-
+-  <!-- Mail Message Pane context menu -->
+-  <popup id="messagePaneContext">
+-    <menuitem id="context-blockimage"
+-              label="&blockImageCmd.label;"
+-              accesskey=""
+-              oncommand="cookieContextMenu.blockImage();"
+-              insertafter="context-viewimage"/>
+-    <menuitem id="context-unblockimage"
+-              label="&unblockImageCmd.label;"
+-              accesskey=""
+-              oncommand="cookieContextMenu.unblockImage();"
+-              insertafter="context-viewimage"/>
+-  </popup>
+-  
+ </overlay>
