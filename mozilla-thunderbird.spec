@@ -1,7 +1,7 @@
 # TODO:
 # - CHECK all features of enigmail
-# - separate pkg for enigmail
-# - enigmail not compatible
+# - separate spec for enigmail
+# - enigmail not compatible with 2.0
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -9,6 +9,7 @@
 #
 %define		_rc		b2
 %define		_rel	2.14
+%define		_enigmail_ver	0.94.2
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -18,7 +19,7 @@ License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
 # Source0-md5:	b633623c460ffef9ba805dd071729890
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.2.tar.gz
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
 # Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
@@ -69,6 +70,26 @@ email client.
 %description -l pl.UTF-8
 Thunderbird Community Edition jest open sourcowym, szybkim i
 przenośnym klientem poczty.
+
+%package addon-enigmail
+Summary:	Extension for the authentication and encryption features provided by GnuPG
+License:	MPL/LGPL
+Version:	%{_enigmail_ver}
+Group:		Applications/Networking
+URL:		http://enigmail.mozdev.org/
+
+%description addon-enigmail
+Enigmail is an extension to the mail client of Mozilla Thunderbird
+which allows users to access the authentication and encryption
+features provided by GnuPG.
+
+Main Features
+- Encrypt/sign mail when sending, decrypt/authenticate received mail
+- Support for inline-PGP (RFC 2440) and PGP/MIME (RFC 3156)
+- Per-Account based encryption and signing defaults
+- Per-Recipient rules for automated key selection, and
+  enabling/disabling encryption and signing
+- OpenPGP key management interface
 
 %prep
 %setup -q -c -n %{name}-%{version}%{_rc}
@@ -288,6 +309,9 @@ exit 0
 
 %dir %{_libdir}/%{name}/extensions
 %{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+
 %if %{with enigmail}
+%files addon-enigmail
+%defattr(644,root,root,755)
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
 %endif
