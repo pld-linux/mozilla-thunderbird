@@ -246,13 +246,3 @@
  
          if (languageBundle && isoStrArray[0])
            langLabel = languageBundle.getString(isoStrArray[0].toLowerCase());
---- mozilla/toolkit/locales/en-US/chrome/global/regionNames.properties~	2005-05-01 10:43:49.000000000 +0300
-+++ mozilla/toolkit/locales/en-US/chrome/global/regionNames.properties	2007-03-06 02:32:05.707859066 +0200
-@@ -37,6 +37,7 @@
- cr	=	Costa Rica
- do	=	Dominican Republic
- ec	=	Ecuador
-+ee	=	Estonia
- es	=	Spain
- gt	=	Guatemala
- hn	=	Honduras
