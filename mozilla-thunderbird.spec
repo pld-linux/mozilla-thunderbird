@@ -81,6 +81,7 @@ przenośnym klientem poczty.
 Summary:	Extension for the authentication and encryption features provided by GnuPG
 License:	MPL/LGPL
 Version:	%{_enigmail_ver}
+Release:	%{_rel}
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
 
