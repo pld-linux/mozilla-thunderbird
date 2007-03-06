@@ -8,9 +8,10 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		_rc		b2
-%define		_rel	2.15
-%define		_enigmail_ver	0.94.2
 %define		_ver	2.0
+%define		_enigmail_ver	0.94.2
+
+%define		_rel	2.16
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -63,6 +64,10 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 # mozilla and thunderbird provide their own versions
 %define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
 %define		_noautoprovfiles	%{_libdir}/%{name}/components
+# we don't want these to satisfy xulrunner-devel
+%define		_noautoprov			libmozjs.so libxpcom.so libxul.so
+# and as we don't provide them, don't require either
+%define		_noautoreq			libmozjs.so libxpcom.so libxul.so
 
 %description
 Thunderbird Community Edition is an open-source,fast and portable
