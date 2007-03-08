@@ -1,25 +1,19 @@
-# TODO:
-# - CHECK all features of enigmail
-# - separate pkg for enigmail
-# - merge changes from mozilla-firefox@DEVEL
-#
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	spellcheck  # build without spellcheck function
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 Summary:	Thunderbird Community Edition - email client
-Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
+Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-%define	_rc	b2
-Version:	2.0
-Release:	0.%{_rc}.1
+Version:	1.5.0.10
+Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
-# Source0-md5:	b633623c460ffef9ba805dd071729890
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.2.tar.gz
-# Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
+# Source0-md5:	65087f8a7adb0773ae7198ec21cc2975
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.3.tar.gz
+# Source1-md5:	08727eea68589eb4c9087ca771229f06
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
@@ -42,14 +36,9 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 %if %{with enigmail}
-BuildRequires:	/bin/ex
 BuildRequires:	/bin/csh
+BuildRequires:	/bin/ex
 %endif
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
@@ -60,19 +49,19 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_thunderbirddir		%{_libdir}/%{name}
 # mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom.so libxpcom_compat.so
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libxpcom.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 
 %description
 Thunderbird Community Edition is an open-source,fast and portable
 email client.
 
-%description -l pl.UTF-8
+%description -l pl
 Thunderbird Community Edition jest open sourcowym, szybkim i
-przeno≈õnym klientem poczty.
+przeno∂nym klientem poczty.
 
 %package dictionary-en-US
 Summary:	English (US) dictionary for spellchecking
-Summary(pl.UTF-8):	Angielski (USA) s≈Çownik do sprawdzania pisowni
+Summary(pl):	Angielski (USA) s≥ownik do sprawdzania pisowni
 Group:		Applications/Dictionaries
 Requires:	mozilla-thunderbird-spellcheck
 
@@ -81,17 +70,16 @@ This package contains English (US) myspell-compatible dictionary used
 for spellcheck function of Thunderbird Community Edition. An
 alternative for this can be the OpenOffice's dictionary.
 
-%description dictionary-en-US -l pl.UTF-8
-Ten pakiet zawiera angielski (USA) s≈Çownik kompatybilny z myspellem,
-u≈ºywany przez funkcjƒô sprawdzania pisowni w Thunderbird Community
-Edition. AlternatywƒÖ dla niego mo≈ºe byƒá s≈Çownik OpenOffice'a.
+%description dictionary-en-US -l pl
+Ten pakiet zawiera angielski (USA) s≥ownik kompatybilny z myspellem,
+uøywany przez funkcjÍ sprawdzania pisowni w Thunderbird Community
+Edition. Alternatyw± dla niego moøe byÊ s≥ownik OpenOffice'a.
 
 %prep
-%setup -q -c -n %{name}-%{version}%{_rc}
+%setup -qc
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
-
-#%patch0 -p1
+%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
@@ -183,9 +171,8 @@ EOF
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
-
 cd mozilla
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}}
 
 %{__make} -C xpinstall/packager stage-package \
 	MOZ_PKG_APPNAME=%{name} \
@@ -243,7 +230,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/components/*.js
 %{_thunderbirddir}/components/*.xpt
 %if %{with spellcheck}
-%dir %{_thunderbirddir}/dictionaries
+%dir %{_thunderbirddir}/components/myspell
 %endif
 %{_thunderbirddir}/defaults
 %{_thunderbirddir}/greprefs
@@ -263,12 +250,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_thunderbirddir}/chrome/icons
 %{_thunderbirddir}/chrome/messenger.jar
 %{_thunderbirddir}/chrome/newsblog.jar
+%{_thunderbirddir}/chrome/offline.jar
 %{_thunderbirddir}/chrome/pippki.jar
 %{_thunderbirddir}/chrome/toolkit.jar
 %{_thunderbirddir}/chrome/*.txt
 %{_thunderbirddir}/chrome/*.manifest
 %{_thunderbirddir}/init.d/README
-%{_thunderbirddir}/isp
 %{_thunderbirddir}/dependentlibs.list
 %{_thunderbirddir}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
 %if %{with enigmail}
@@ -283,6 +270,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with spellcheck}
 %files dictionary-en-US
 %defattr(644,root,root,755)
-%{_thunderbirddir}/dictionaries/en-US.dic
-%{_thunderbirddir}/dictionaries/en-US.aff
+%{_thunderbirddir}/components/myspell/en-US.dic
+%{_thunderbirddir}/components/myspell/en-US.aff
 %endif
