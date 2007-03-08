@@ -12,8 +12,8 @@ License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
 # Source0-md5:	65087f8a7adb0773ae7198ec21cc2975
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.1.tar.gz
-# Source1-md5:	b255e7a77ecea435934bfa1872e99f6a
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.2.tar.gz
+# Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
