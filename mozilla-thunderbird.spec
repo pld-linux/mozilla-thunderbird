@@ -18,7 +18,6 @@ Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
 Source5:	%{name}.png
-Patch0:		%{name}-nss.patch
 Patch1:		%{name}-lib_path.patch
 Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
@@ -80,7 +79,6 @@ Edition. Alternatyw± dla niego mo¿e byæ s³ownik OpenOffice'a.
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 
-#patch0 -p1 - applied in 1.5.0.10 ?
 %patch1 -p1
 %patch3 -p1
 %{?with_enigmail:%patch4 -p1}
