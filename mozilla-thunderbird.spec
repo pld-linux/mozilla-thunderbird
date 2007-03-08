@@ -1,8 +1,3 @@
-# TODO:
-# - CHECK all features of enigmail
-# - separate pkg for enigmail
-# - merge changes from mozilla-firefox@DEVEL
-#
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	spellcheck  # build without spellcheck function
@@ -11,12 +6,12 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	1.5.0.9
+Version:	1.5.0.10
 Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	bb74629a8d99a6653c5ab978cf9c6227
+# Source0-md5:	65087f8a7adb0773ae7198ec21cc2975
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-0.94.1.tar.gz
 # Source1-md5:	b255e7a77ecea435934bfa1872e99f6a
 Source2:	%{name}.desktop
