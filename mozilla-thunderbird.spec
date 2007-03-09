@@ -81,6 +81,7 @@ przenośnym klientem poczty.
 
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
+Summary(pl.UTF-8):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 Version:	%{_enigmail_ver}
 Release:	%{_rel}
 License:	MPL/LGPL
@@ -93,13 +94,27 @@ Enigmail is an extension to the mail client of Mozilla Thunderbird
 which allows users to access the authentication and encryption
 features provided by GnuPG.
 
-Main Features
+Main Features:
 - Encrypt/sign mail when sending, decrypt/authenticate received mail
 - Support for inline-PGP (RFC 2440) and PGP/MIME (RFC 3156)
 - Per-Account based encryption and signing defaults
 - Per-Recipient rules for automated key selection, and
   enabling/disabling encryption and signing
 - OpenPGP key management interface
+
+%description addon-enigmail -l pl.UTF-8
+Enigmail to rozszerzenie klienta pocztowego Mozilla Thunderbird
+pozwalające użytkownikom na dostęp do uwierzytelniania i szyfrowania
+zapewnianego przez GnuPG.
+
+Główne możliwości:
+- szyfrowanie/podpisywanie poczty przy wysyłaniu,
+  odszyfrowywanie/uwierzytelnianie poczty odebranej
+- obsługa inline-PGP (RFC 2440) i PGP/MIME (RFC 3156)
+- ustawienia domyślne szyfrowania i podpisywania dla każdego konta
+- reguły automatycznego wyboru kluczy i włączenia szyfrowania oraz
+  podpisywania dla każdego adresata
+- interfejs do zarządzania kluczami OpenPGP
 
 %prep
 %setup -q -c -n %{name}-%{_ver}%{_rc}
