@@ -1,3 +1,4 @@
+#
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	spellcheck  # build without spellcheck function
