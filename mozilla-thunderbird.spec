@@ -12,9 +12,9 @@
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.2
 
-%define		_rel	2.18
+%define		_rel	3
 Summary:	Thunderbird Community Edition - email client
-Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
+Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{_ver}
 Release:	%{_release}
@@ -75,13 +75,13 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Thunderbird Community Edition is an open-source,fast and portable
 email client.
 
-%description -l pl.UTF-8
+%description -l pl
 Thunderbird Community Edition jest open sourcowym, szybkim i
-przeno≈õnym klientem poczty.
+przeno∂nym klientem poczty.
 
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
-Summary(pl.UTF-8):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
+Summary(pl):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 Version:	%{_enigmail_ver}
 Release:	%{_rel}
 License:	MPL/LGPL
@@ -102,19 +102,19 @@ Main Features:
   enabling/disabling encryption and signing
 - OpenPGP key management interface
 
-%description addon-enigmail -l pl.UTF-8
+%description addon-enigmail -l pl
 Enigmail to rozszerzenie klienta pocztowego Mozilla Thunderbird
-pozwalajƒÖce u≈ºytkownikom na dostƒôp do uwierzytelniania i szyfrowania
+pozwalaj±ce uøytkownikom na dostÍp do uwierzytelniania i szyfrowania
 zapewnianego przez GnuPG.
 
-G≈Ç√≥wne mo≈ºliwo≈õci:
-- szyfrowanie/podpisywanie poczty przy wysy≈Çaniu,
+G≥Ûwne moøliwo∂ci:
+- szyfrowanie/podpisywanie poczty przy wysy≥aniu,
   odszyfrowywanie/uwierzytelnianie poczty odebranej
-- obs≈Çuga inline-PGP (RFC 2440) i PGP/MIME (RFC 3156)
-- ustawienia domy≈õlne szyfrowania i podpisywania dla ka≈ºdego konta
-- regu≈Çy automatycznego wyboru kluczy i w≈ÇƒÖczenia szyfrowania oraz
-  podpisywania dla ka≈ºdego adresata
-- interfejs do zarzƒÖdzania kluczami OpenPGP
+- obs≥uga inline-PGP (RFC 2440) i PGP/MIME (RFC 3156)
+- ustawienia domy∂lne szyfrowania i podpisywania dla kaødego konta
+- regu≥y automatycznego wyboru kluczy i w≥±czenia szyfrowania oraz
+  podpisywania dla kaødego adresata
+- interfejs do zarz±dzania kluczami OpenPGP
 
 %prep
 %setup -q -c -n %{name}-%{_ver}%{_rc}
