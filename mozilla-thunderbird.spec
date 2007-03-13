@@ -12,7 +12,7 @@
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.2
 
-%define		_rel	3
+%define		_rel	4
 Summary:	Thunderbird Community Edition - email client
 Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -53,11 +53,6 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
