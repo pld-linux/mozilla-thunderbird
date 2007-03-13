@@ -1,7 +1,7 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate spec for enigmail
-# - enigmail not compatible with 2.0
+# - enigmail says it's not compatible with thunderbird 2.0, while home page says it is.
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
@@ -9,14 +9,15 @@
 #
 %define		_rc		b2
 %define		_ver	2.0
+%define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.2
 
-%define		_rel	2.16
+%define		_rel	5
 Summary:	Thunderbird Community Edition - email client
-Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
+Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{_ver}
-Release:	0.%{_rc}.%{_rel}
+Release:	%{_release}
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
@@ -38,6 +39,7 @@ Patch6:		%{name}-fonts.patch
 Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
 Patch9:		%{name}-myspell.patch
+Patch10:	%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -51,11 +53,6 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
@@ -73,29 +70,46 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Thunderbird Community Edition is an open-source,fast and portable
 email client.
 
-%description -l pl.UTF-8
+%description -l pl
 Thunderbird Community Edition jest open sourcowym, szybkim i
-przenoÅ›nym klientem poczty.
+przeno¶nym klientem poczty.
 
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
-License:	MPL/LGPL
+Summary(pl):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 Version:	%{_enigmail_ver}
+Release:	%{_rel}
+License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
+Requires:	%{name} = %{_ver}-%{_release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
 which allows users to access the authentication and encryption
 features provided by GnuPG.
 
-Main Features
+Main Features:
 - Encrypt/sign mail when sending, decrypt/authenticate received mail
 - Support for inline-PGP (RFC 2440) and PGP/MIME (RFC 3156)
 - Per-Account based encryption and signing defaults
 - Per-Recipient rules for automated key selection, and
   enabling/disabling encryption and signing
 - OpenPGP key management interface
+
+%description addon-enigmail -l pl
+Enigmail to rozszerzenie klienta pocztowego Mozilla Thunderbird
+pozwalaj±ce u¿ytkownikom na dostêp do uwierzytelniania i szyfrowania
+zapewnianego przez GnuPG.
+
+G³ówne mo¿liwo¶ci:
+- szyfrowanie/podpisywanie poczty przy wysy³aniu,
+  odszyfrowywanie/uwierzytelnianie poczty odebranej
+- obs³uga inline-PGP (RFC 2440) i PGP/MIME (RFC 3156)
+- ustawienia domy¶lne szyfrowania i podpisywania dla ka¿dego konta
+- regu³y automatycznego wyboru kluczy i w³±czenia szyfrowania oraz
+  podpisywania dla ka¿dego adresata
+- interfejs do zarz±dzania kluczami OpenPGP
 
 %prep
 %setup -q -c -n %{name}-%{_ver}%{_rc}
@@ -109,6 +123,7 @@ cd mozilla
 %patch7 -p2
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 :> config/gcc_hidden.h
 
