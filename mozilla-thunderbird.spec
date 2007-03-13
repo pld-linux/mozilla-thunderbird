@@ -12,7 +12,7 @@
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.2
 
-%define		_rel	4
+%define		_rel	5
 Summary:	Thunderbird Community Edition - email client
 Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -82,7 +82,7 @@ Release:	%{_rel}
 License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
-Requires:	%{name} = %{version}-%{_release}
+Requires:	%{name} = %{_ver}-%{_release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
