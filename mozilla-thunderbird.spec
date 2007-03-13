@@ -87,7 +87,7 @@ Release:	%{_rel}
 License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
-Requires:	%{name} = %{version}-%{_release}
+Requires:	%{name} = %{_ver}-%{_release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
