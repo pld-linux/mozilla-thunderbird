@@ -10,7 +10,7 @@
 %define		_rc		b2
 %define		_ver	2.0
 %define		_release	0.%{_rc}.%{_rel}
-%define		_enigmail_ver	0.94.2
+%define		_enigmail_ver	0.94.3
 
 %define		_rel	5
 Summary:	Thunderbird Community Edition - email client
@@ -23,7 +23,7 @@ Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
 # Source0-md5:	b633623c460ffef9ba805dd071729890
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
-# Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
+# Source1-md5:	08727eea68589eb4c9087ca771229f06
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
