@@ -278,7 +278,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
+%pretrans
 if [ -d %{_libdir}/%{name}/dictionaries ] && [ ! -L %{_libdir}/%{name}/dictionaries ]; then
 	mv -v %{_libdir}/%{name}/dictionaries{,.rpmsave}
 fi
