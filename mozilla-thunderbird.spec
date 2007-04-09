@@ -12,7 +12,7 @@
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.3
 
-%define		_rel	5
+%define		_rel	6
 Summary:	Thunderbird Community Edition - email client
 Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -273,7 +273,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
+%pretrans
 if [ -d %{_libdir}/%{name}/dictionaries ] && [ ! -L %{_libdir}/%{name}/dictionaries ]; then
 	mv -v %{_libdir}/%{name}/dictionaries{,.rpmsave}
 fi
