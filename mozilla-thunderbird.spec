@@ -12,7 +12,7 @@
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.3
 
-%define		_rel	3
+%define		_rel	4
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
