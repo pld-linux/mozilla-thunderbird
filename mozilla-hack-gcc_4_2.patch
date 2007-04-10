@@ -1,14 +1,20 @@
-; giant hack, if you feel brave enough you can try to track it down deeper
-; https://bugzilla.mozilla.org/show_bug.cgi?id=362462
---- mozilla/mozilla/netwerk/base/src/nsStandardURL.cpp~	2007-02-26 09:31:24.171735485 +0100
-+++ mozilla/mozilla/netwerk/base/src/nsStandardURL.cpp	2007-02-26 10:04:35.679481070 +0100
-@@ -2510,6 +2510,9 @@
+diff -puNr mozilla/mozilla.orig/netwerk/base/src/nsStandardURL.h mozilla/mozilla/netwerk/base/src/nsStandardURL.h
+--- mozilla.orig/mozilla/netwerk/base/src/nsStandardURL.h	2006-05-02 20:53:56.000000000 +0200
++++ mozilla/mozilla/netwerk/base/src/nsStandardURL.h	2007-04-10 21:18:23.000000000 +0200
+@@ -262,11 +262,11 @@ private:
+         eEncoding_UTF8
+     };
  
-     InvalidateCache();
+-    PRUint32 mHostEncoding    : 2; // eEncoding_xxx
+-    PRUint32 mSpecEncoding    : 2; // eEncoding_xxx
+-    PRUint32 mURLType         : 2; // nsIStandardURL::URLTYPE_xxx
+-    PRUint32 mMutable         : 1; // nsIStandardURL::mutable
+-    PRUint32 mSupportsFileURL : 1; // QI to nsIFileURL?
++    PRUint32 mHostEncoding; // eEncoding_xxx
++    PRUint32 mSpecEncoding; // eEncoding_xxx
++    PRUint32 mURLType; // nsIStandardURL::URLTYPE_xxx
++    PRUint32 mMutable; // nsIStandardURL::mutable
++    PRUint32 mSupportsFileURL; // QI to nsIFileURL?
  
-+    if (urlType != URLTYPE_STANDARD && urlType != URLTYPE_AUTHORITY && urlType != URLTYPE_NO_AUTHORITY)
-+        urlType = URLTYPE_STANDARD;
-+
-     switch (urlType) {
-     case URLTYPE_STANDARD:
-         mParser = net_GetStdURLParser();
+     // global objects.  don't use COMPtr as its destructor will cause a
+     // coredump if we leak it.
