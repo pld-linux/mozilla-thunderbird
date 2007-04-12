@@ -7,12 +7,12 @@
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
-%define		_rc		b2
-%define		_ver	2.0
+%define		_rc		rc1
+%define		_ver	2.0.0.0
 %define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.3
 
-%define		_rel	4
+%define		_rel	1
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
@@ -21,7 +21,7 @@ Release:	%{_release}
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
-# Source0-md5:	b633623c460ffef9ba805dd071729890
+# Source0-md5:	8e672d9f9206e0e1f03790dacb51e1bb
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
 # Source1-md5:	08727eea68589eb4c9087ca771229f06
 Source2:	%{name}.desktop
