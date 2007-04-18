@@ -7,20 +7,16 @@
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
-%define		_rc		rc1
-%define		_ver	2.0.0.0
-%define		_release	0.%{_rc}.%{_rel}
 %define		_enigmail_ver	0.94.3
 
-%define		_rel	1
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	%{_ver}
-Release:	%{_release}
+Version:	2.0.0.0
+Release:	0.1
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
 # Source0-md5:	8e672d9f9206e0e1f03790dacb51e1bb
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
 # Source1-md5:	08727eea68589eb4c9087ca771229f06
@@ -83,11 +79,11 @@ przenośnym klientem poczty.
 Summary:	Extension for the authentication and encryption features provided by GnuPG
 Summary(pl.UTF-8):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 Version:	%{_enigmail_ver}
-Release:	%{_rel}
+Release:	%{release}
 License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
-Requires:	%{name} = %{_ver}-%{_release}
+Requires:	%{name} = %{version}-%{release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
@@ -117,7 +113,7 @@ Główne możliwości:
 - interfejs do zarządzania kluczami OpenPGP
 
 %prep
-%setup -q -c -n %{name}-%{_ver}%{_rc}
+%setup -q -c
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 %patch1 -p1
