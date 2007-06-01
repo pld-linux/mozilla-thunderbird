@@ -29,10 +29,6 @@ Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
 Patch5:		%{name}-gcc.patch
 Patch6:		%{name}-fonts.patch
-# drop as soon as bug is fixed since it's so ugly hack
-# fixing symptoms only
-# https://bugzilla.mozilla.org/show_bug.cgi?id=362462
-Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
 Patch9:		%{name}-myspell.patch
 Patch10:	%{name}-regionNames.patch
@@ -120,7 +116,6 @@ cd mozilla
 %{?with_enigmail:%patch4 -p1}
 %patch5 -p1
 %patch6 -p1
-%patch7 -p2
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
