@@ -56,12 +56,12 @@ Obsoletes:	mozilla-thunderbird-dictionary-en-US
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
 %define		_noautoprovfiles	%{_libdir}/%{name}/components
 # we don't want these to satisfy xulrunner-devel
-%define		_noautoprov			libmozjs.so libxpcom.so libxul.so
+%define		_noautoprov		libgtkembedmoz.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxul.so
 # and as we don't provide them, don't require either
-%define		_noautoreq			libmozjs.so libxpcom.so libxul.so
+%define		_noautoreq		libgtkembedmoz.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxul.so
 
 %description
 Thunderbird Community Edition is an open-source,fast and portable
