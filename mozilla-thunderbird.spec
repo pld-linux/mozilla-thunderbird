@@ -55,8 +55,8 @@ Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-# mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
+# firefox/thunderbird/seamonkey provide their own versions
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkxtbin.so libjsj.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 %define		_noautoprovfiles	%{_libdir}/%{name}/components
 # we don't want these to satisfy xulrunner-devel
 %define		_noautoprov		libgtkembedmoz.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxul.so
