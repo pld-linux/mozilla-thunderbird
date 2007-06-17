@@ -7,17 +7,17 @@
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
 %define		enigmail_ver		0.95.1
-%define		thunderbird_ver		2.0.0.0
+%define		thunderbird_ver		2.0.0.4
 
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{thunderbird_ver}
-Release:	3
+Release:	1
 License:	MPL/LGPL
 Group:		Applications/Networking
 Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	8e672d9f9206e0e1f03790dacb51e1bb
+# Source0-md5:	26cdf3e2c8d95421345af8e88ebc9aff
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{enigmail_ver}.tar.gz
 # Source1-md5:	8c585b6bca96cc1ece50bc850cc99ede
 Source2:	%{name}.desktop
