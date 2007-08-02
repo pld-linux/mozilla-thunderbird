@@ -4,20 +4,27 @@
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
+%bcond_without	gnomeui		# disable gnomeui support
+%bcond_without	gnomevfs	# disable GNOME comp. (gconf+libgnome+gnomevfs) and gnomevfs ext.
+%bcond_without	gnome		# disable all GNOME components (gnome+gnomeui+gnomevfs)
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
+%if %{without gnome}
+%undefine	with_gnomeui
+%undefine	with_gnomevfs
+%endif
 %define		enigmail_ver		0.95.2
-%define		thunderbird_ver		2.0.0.5
+%define		thunderbird_ver		2.0.0.6
 
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{thunderbird_ver}
 Release:	1
-License:	MPL/LGPL
+License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	9ce0b2381e500e9822ae1e7b8871a147
+Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
+# Source0-md5:	1a002dfc74cfb7f0b36a448ea3cd14b9
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{enigmail_ver}.tar.gz
 # Source1-md5:	62c0406d787e264b5d33656d13115b3c
 Source2:	%{name}.desktop
@@ -33,10 +40,14 @@ Patch8:		%{name}-install.patch
 Patch9:		%{name}-myspell.patch
 Patch10:	%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
+%{?with_gnomevfs:BuildRequires:	GConf2-devel >= 1.2.1}
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
+%{?with_gnomevfs:BuildRequires:	gnome-vfs2-devel >= 2.0}
 BuildRequires:	gtk+2-devel >= 1:2.0.0
 BuildRequires:	libIDL-devel >= 0.8.0
+%{?with_gnomevfs:BuildRequires:	libgnome-devel >= 2.0}
+%{?with_gnomeui:BuildRequires:	libgnomeui-devel >= 2.2.0}
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
@@ -159,7 +170,16 @@ ac_add_options --enable-tests
 %else
 ac_add_options --disable-tests
 %endif
-
+%if %{with gnomeui}
+ac_add_options --enable-gnomeui
+%else
+ac_add_options --disable-gnomeui
+%endif
+%if %{with gnomevfs}
+ac_add_options --enable-gnomevfs
+%else
+ac_add_options --disable-gnomevfs
+%endif
 %if %{with ldap}
 ac_add_options --enable-ldap
 %else
