@@ -1,28 +1,25 @@
 # TODO:
 # - CHECK all features of enigmail
 # - separate spec for enigmail
-# - enigmail not compatible with 2.0
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
-%define		_rc		b2
-%define		_ver	2.0
-%define		_enigmail_ver	0.94.2
+%define		_enigmail_ver		0.95.2
+%define		_thunderbird_ver	2.0.0.6
 
-%define		_rel	2.16
 Summary:	Thunderbird Community Edition - email client
-Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
+Summary(pl):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	%{_ver}
-Release:	0.%{_rc}.%{_rel}
+Version:	%{_thunderbird_ver}
+Release:	2
 License:	MPL/LGPL
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}%{_rc}/source/thunderbird-%{version}%{_rc}-source.tar.bz2
-# Source0-md5:	b633623c460ffef9ba805dd071729890
+Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
+# Source0-md5:	1a002dfc74cfb7f0b36a448ea3cd14b9
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
-# Source1-md5:	cc1ba2bec7c3a2ac408ef24fbf1884de
+# Source1-md5:	62c0406d787e264b5d33656d13115b3c
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
@@ -32,12 +29,9 @@ Patch3:		%{name}-nopangoxft.patch
 Patch4:		%{name}-enigmail-shared.patch
 Patch5:		%{name}-gcc.patch
 Patch6:		%{name}-fonts.patch
-# drop as soon as bug is fixed since it's so ugly hack
-# fixing symptoms only
-# https://bugzilla.mozilla.org/show_bug.cgi?id=362462
-Patch7:		mozilla-hack-gcc_4_2.patch
 Patch8:		%{name}-install.patch
 Patch9:		%{name}-myspell.patch
+Patch10:	%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
@@ -51,11 +45,6 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
-BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	xorg-lib-libXt-devel
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
@@ -73,23 +62,25 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Thunderbird Community Edition is an open-source,fast and portable
 email client.
 
-%description -l pl.UTF-8
+%description -l pl
 Thunderbird Community Edition jest open sourcowym, szybkim i
-przenoÅ›nym klientem poczty.
+przeno¶nym klientem poczty.
 
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
-License:	MPL/LGPL
+Summary(pl):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 Version:	%{_enigmail_ver}
+License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
+Requires:	%{name} = %{_thunderbird_ver}-%{release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
 which allows users to access the authentication and encryption
 features provided by GnuPG.
 
-Main Features
+Main Features:
 - Encrypt/sign mail when sending, decrypt/authenticate received mail
 - Support for inline-PGP (RFC 2440) and PGP/MIME (RFC 3156)
 - Per-Account based encryption and signing defaults
@@ -97,8 +88,22 @@ Main Features
   enabling/disabling encryption and signing
 - OpenPGP key management interface
 
+%description addon-enigmail -l pl
+Enigmail to rozszerzenie klienta pocztowego Mozilla Thunderbird
+pozwalaj±ce u¿ytkownikom na dostêp do uwierzytelniania i szyfrowania
+zapewnianego przez GnuPG.
+
+G³ówne mo¿liwo¶ci:
+- szyfrowanie/podpisywanie poczty przy wysy³aniu,
+  odszyfrowywanie/uwierzytelnianie poczty odebranej
+- obs³uga inline-PGP (RFC 2440) i PGP/MIME (RFC 3156)
+- ustawienia domy¶lne szyfrowania i podpisywania dla ka¿dego konta
+- regu³y automatycznego wyboru kluczy i w³±czenia szyfrowania oraz
+  podpisywania dla ka¿dego adresata
+- interfejs do zarz±dzania kluczami OpenPGP
+
 %prep
-%setup -q -c -n %{name}-%{_ver}%{_rc}
+%setup -q -c
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 %patch1 -p1
@@ -106,9 +111,9 @@ cd mozilla
 %{?with_enigmail:%patch4 -p1}
 %patch5 -p1
 %patch6 -p1
-%patch7 -p2
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 :> config/gcc_hidden.h
 
@@ -258,7 +263,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
+%pretrans
 if [ -d %{_libdir}/%{name}/dictionaries ] && [ ! -L %{_libdir}/%{name}/dictionaries ]; then
 	mv -v %{_libdir}/%{name}/dictionaries{,.rpmsave}
 fi
