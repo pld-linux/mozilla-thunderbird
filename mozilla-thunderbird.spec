@@ -211,7 +211,7 @@ ac_add_options --with-system-zlib
 ac_add_options --with-pthreads
 ac_add_options --enable-single-profile
 ac_add_options --disable-profilesharing
-
+ac_add_options --with-default-mozilla-five-home=%{_libdir}/%{name}
 EOF
 
 %{__make} -j1 -f client.mk build_all \
