@@ -1,7 +1,7 @@
 #!/bin/sh
 # based on script by (c) vip at linux.pl, wolf at pld-linux.org
 
-MOZILLA_FIVE_HOME="@LIBDIR@/mozilla-thunderbird"
+LIBDIR="@LIBDIR@/mozilla-firefox"
 
 MOZARGS=
 MOZLOCALE="$(/usr/bin/locale | grep "^LC_MESSAGES=" | \
@@ -9,7 +9,7 @@ MOZLOCALE="$(/usr/bin/locale | grep "^LC_MESSAGES=" | \
 for MOZLANG in $(echo $LANGUAGE | tr ":" " ") $MOZLOCALE; do
 	eval MOZLANG="$(echo $MOZLANG | sed -e "s|_\([^.]*\).*|-\1|g")"
 
-	if [ -f $MOZILLA_FIVE_HOME/chrome/$MOZLANG.jar ]; then
+	if [ -f $LIBDIR/chrome/$MOZLANG.jar ]; then
 		MOZARGS="-UILocale $MOZLANG"
 		break
 	fi
@@ -31,9 +31,9 @@ if [ -z "$MOZARGS" ]; then
 fi
 
 if [ -n "$MOZARGS" ]; then
-	THUNDERBIRD="$MOZILLA_FIVE_HOME/thunderbird $MOZARGS"
+	THUNDERBIRD="$LIBDIR/thunderbird $MOZARGS"
 else
-	THUNDERBIRD="$MOZILLA_FIVE_HOME/thunderbird"
+	THUNDERBIRD="$LIBDIR/thunderbird"
 fi
 
 if [ "$1" == "-remote" ]; then
