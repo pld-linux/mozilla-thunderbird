@@ -1,7 +1,7 @@
 #!/bin/sh
 # based on script by (c) vip at linux.pl, wolf at pld-linux.org
 
-LIBDIR="@LIBDIR@/mozilla-firefox"
+LIBDIR="@LIBDIR@/mozilla-thunderbird"
 
 MOZARGS=
 MOZLOCALE="$(/usr/bin/locale | grep "^LC_MESSAGES=" | \
