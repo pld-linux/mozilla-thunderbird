@@ -11,6 +11,6 @@ Exec=mozilla-thunderbird
 Icon=mozilla-thunderbird
 Terminal=false
 Type=Application
-Categories=Network;Email;
+Categories=GTK;Network;Email;
 Encoding=UTF-8
 # vi: encoding=utf-8
