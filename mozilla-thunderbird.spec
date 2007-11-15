@@ -13,20 +13,20 @@
 %undefine	with_gnomeui
 %undefine	with_gnomevfs
 %endif
-%define		enigmail_ver		0.95.2
-%define		thunderbird_ver		2.0.0.6
+%define		enigmail_ver		0.95.5
+%define		thunderbird_ver		2.0.0.9
 
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{thunderbird_ver}
-Release:	3
+Release:	1
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	1a002dfc74cfb7f0b36a448ea3cd14b9
+# Source0-md5:	a6dd74f87dafc7516e7970ecefee046b
 Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{enigmail_ver}.tar.gz
-# Source1-md5:	62c0406d787e264b5d33656d13115b3c
+# Source1-md5:	18b45ff84edbea05acd5756fc63e9ba0
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
