@@ -20,7 +20,7 @@ Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
 Version:	%{thunderbird_ver}
-Release:	1
+Release:	2
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
@@ -32,13 +32,12 @@ Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
 Source5:	%{name}.png
 Patch1:		%{name}-lib_path.patch
-Patch3:		%{name}-nopangoxft.patch
-Patch4:		%{name}-enigmail-shared.patch
-Patch5:		%{name}-gcc.patch
-Patch6:		%{name}-fonts.patch
-Patch8:		%{name}-install.patch
-Patch9:		%{name}-myspell.patch
-Patch10:	%{name}-regionNames.patch
+Patch2:		%{name}-enigmail-shared.patch
+Patch3:		%{name}-gcc.patch
+Patch4:		%{name}-fonts.patch
+Patch5:		%{name}-install.patch
+Patch6:		%{name}-myspell.patch
+Patch7:		%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 %{?with_gnomevfs:BuildRequires:	GConf2-devel >= 1.2.1}
 BuildRequires:	automake
@@ -123,13 +122,12 @@ Główne możliwości:
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 %patch1 -p1
+%{?with_enigmail:%patch2 -p1}
 %patch3 -p1
-%{?with_enigmail:%patch4 -p1}
+%patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%patch7 -p1
 
 :> config/gcc_hidden.h
 
