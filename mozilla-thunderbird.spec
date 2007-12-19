@@ -4,39 +4,49 @@
 #
 # Conditional builds
 %bcond_without	enigmail    # don't build enigmail - GPG/PGP support
+%bcond_without	gnomeui		# disable gnomeui support
+%bcond_without	gnomevfs	# disable GNOME comp. (gconf+libgnome+gnomevfs) and gnomevfs ext.
+%bcond_without	gnome		# disable all GNOME components (gnome+gnomeui+gnomevfs)
 %bcond_without	ldap	    # disable e-mail address lookups in LDAP directories
 #
-%define		_enigmail_ver		0.95.2
-%define		_thunderbird_ver	2.0.0.6
+%if %{without gnome}
+%undefine	with_gnomeui
+%undefine	with_gnomevfs
+%endif
+%define		enigmail_ver		0.95.5
+%define		thunderbird_ver		2.0.0.9
 
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	%{_thunderbird_ver}
+Version:	%{thunderbird_ver}
 Release:	2
-License:	MPL/LGPL
+License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		Applications/Networking
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	1a002dfc74cfb7f0b36a448ea3cd14b9
-Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{_enigmail_ver}.tar.gz
-# Source1-md5:	62c0406d787e264b5d33656d13115b3c
+Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
+# Source0-md5:	a6dd74f87dafc7516e7970ecefee046b
+Source1:	http://www.mozilla-enigmail.org/downloads/src/enigmail-%{enigmail_ver}.tar.gz
+# Source1-md5:	18b45ff84edbea05acd5756fc63e9ba0
 Source2:	%{name}.desktop
 Source3:	%{name}.sh
 Source4:	%{name}-enigmail.manifest
 Source5:	%{name}.png
 Patch1:		%{name}-lib_path.patch
-Patch3:		%{name}-nopangoxft.patch
-Patch4:		%{name}-enigmail-shared.patch
-Patch5:		%{name}-gcc.patch
-Patch6:		%{name}-fonts.patch
-Patch8:		%{name}-install.patch
-Patch9:		%{name}-myspell.patch
-Patch10:	%{name}-regionNames.patch
+Patch2:		%{name}-enigmail-shared.patch
+Patch3:		%{name}-gcc.patch
+Patch4:		%{name}-fonts.patch
+Patch5:		%{name}-install.patch
+Patch6:		%{name}-myspell.patch
+Patch7:		%{name}-regionNames.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
+%{?with_gnomevfs:BuildRequires:	GConf2-devel >= 1.2.1}
 BuildRequires:	automake
 BuildRequires:	freetype-devel >= 1:2.1.8
+%{?with_gnomevfs:BuildRequires:	gnome-vfs2-devel >= 2.0}
 BuildRequires:	gtk+2-devel >= 1:2.0.0
 BuildRequires:	libIDL-devel >= 0.8.0
+%{?with_gnomevfs:BuildRequires:	libgnome-devel >= 2.0}
+%{?with_gnomeui:BuildRequires:	libgnomeui-devel >= 2.2.0}
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libpng-devel >= 1.2.0
 BuildRequires:	libstdc++-devel
@@ -45,18 +55,19 @@ BuildRequires:	nspr-devel >= 1:4.6.1
 BuildRequires:	nss-devel >= 1:3.11.3
 BuildRequires:	pango-devel >= 1:1.1.0
 BuildRequires:	sed >= 4.0
+Requires:	myspell-common
 Requires:	nspr >= 1:4.6.1
 Requires:	nss >= 1:3.11.3
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-# mozilla and thunderbird provide their own versions
-%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libjsj.so libmozjs.so libxpcom_compat.so libxpcom_core.so libxpcom.so libxpistub.so
+# firefox/thunderbird/seamonkey provide their own versions
+%define		_noautoreqdep		libgfxpsshar.so libgkgfx.so libgtkxtbin.so libjsj.so libxpcom_compat.so libxpcom_core.so libxpistub.so
 %define		_noautoprovfiles	%{_libdir}/%{name}/components
 # we don't want these to satisfy xulrunner-devel
-%define		_noautoprov			libmozjs.so libxpcom.so libxul.so
+%define		_noautoprov		libgtkembedmoz.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxul.so
 # and as we don't provide them, don't require either
-%define		_noautoreq			libmozjs.so libxpcom.so libxul.so
+%define		_noautoreq		libgtkembedmoz.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxul.so
 
 %description
 Thunderbird Community Edition is an open-source,fast and portable
@@ -69,11 +80,11 @@ przenośnym klientem poczty.
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
 Summary(pl.UTF-8):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
-Version:	%{_enigmail_ver}
+Version:	%{enigmail_ver}
 License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
-Requires:	%{name} = %{_thunderbird_ver}-%{release}
+Requires:	%{name} = %{thunderbird_ver}-%{release}
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
@@ -107,13 +118,12 @@ Główne możliwości:
 cd mozilla
 %{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
 %patch1 -p1
+%{?with_enigmail:%patch2 -p1}
 %patch3 -p1
-%{?with_enigmail:%patch4 -p1}
+%patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%patch7 -p1
 
 :> config/gcc_hidden.h
 
@@ -154,7 +164,16 @@ ac_add_options --enable-tests
 %else
 ac_add_options --disable-tests
 %endif
-
+%if %{with gnomeui}
+ac_add_options --enable-gnomeui
+%else
+ac_add_options --disable-gnomeui
+%endif
+%if %{with gnomevfs}
+ac_add_options --enable-gnomevfs
+%else
+ac_add_options --disable-gnomevfs
+%endif
 %if %{with ldap}
 ac_add_options --enable-ldap
 %else
@@ -186,7 +205,7 @@ ac_add_options --with-system-zlib
 ac_add_options --with-pthreads
 ac_add_options --enable-single-profile
 ac_add_options --disable-profilesharing
-
+ac_add_options --with-default-mozilla-five-home=%{_libdir}/%{name}
 EOF
 
 %{__make} -j1 -f client.mk build_all \
