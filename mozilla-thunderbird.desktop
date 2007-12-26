@@ -12,5 +12,4 @@ Icon=mozilla-thunderbird
 Terminal=false
 Type=Application
 Categories=GTK;Network;Email;
-Encoding=UTF-8
 # vi: encoding=utf-8
