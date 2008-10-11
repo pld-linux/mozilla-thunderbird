@@ -304,13 +304,15 @@ exit 0
 %attr(755,root,root) %{_libdir}/%{name}/libgkgfx.so
 %attr(755,root,root) %{_libdir}/%{name}/libgtkembedmoz.so
 %attr(755,root,root) %{_libdir}/%{name}/libgtkxtbin.so
-%{?with_ldap:%attr(755,root,root) %{_libdir}/%{name}/libldap50.so}
 %attr(755,root,root) %{_libdir}/%{name}/libmozjs.so
-%{?with_ldap:%attr(755,root,root) %{_libdir}/%{name}/libprldap50.so}
 %attr(755,root,root) %{_libdir}/%{name}/libxpcom.so
 %attr(755,root,root) %{_libdir}/%{name}/libxpcom_compat.so
 %attr(755,root,root) %{_libdir}/%{name}/libxpcom_core.so
 %attr(755,root,root) %{_libdir}/%{name}/libxpistub.so
+%if %{with ldap}
+%attr(755,root,root) %{_libdir}/%{name}/libldap50.so
+%attr(755,root,root) %{_libdir}/%{name}/libprldap50.so
+%endif
 %attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
 %attr(755,root,root) %{_libdir}/%{name}/regxpcom
 %attr(755,root,root) %{_libdir}/%{name}/run-mozilla.sh
@@ -348,7 +350,6 @@ exit 0
 %attr(755,root,root) %{_libdir}/%{name}/components/libmailcomps.so
 %attr(755,root,root) %{_libdir}/%{name}/components/libmork.so
 %attr(755,root,root) %{_libdir}/%{name}/components/libmozfind.so
-%{?with_ldap:%attr(755,root,root) %{_libdir}/%{name}/components/libmozldap.so}
 %attr(755,root,root) %{_libdir}/%{name}/components/libmsgsmime.so
 %attr(755,root,root) %{_libdir}/%{name}/components/libmyspell.so
 %attr(755,root,root) %{_libdir}/%{name}/components/libnecko.so
@@ -448,7 +449,6 @@ exit 0
 %{_libdir}/%{name}/components/mimetype.xpt
 %{_libdir}/%{name}/components/mozbrwsr.xpt
 %{_libdir}/%{name}/components/mozfind.xpt
-%{?with_ldap:%{_libdir}/%{name}/components/mozldap.xpt}
 %{_libdir}/%{name}/components/msgbase.xpt
 %{_libdir}/%{name}/components/msgcompose.xpt
 %{_libdir}/%{name}/components/msgdb.xpt
@@ -518,6 +518,10 @@ exit 0
 %{_libdir}/%{name}/components/xuldoc.xpt
 %{_libdir}/%{name}/components/xultmpl.xpt
 %{_libdir}/%{name}/components/*.js
+%if %{with ldap}
+%attr(755,root,root) %{_libdir}/%{name}/components/libmozldap.so
+%{_libdir}/%{name}/components/mozldap.xpt
+%endif
 # gnome subpackage?
 %if %{with gnomeui}
 %attr(755,root,root) %{_libdir}/%{name}/components/libimgicon.so
