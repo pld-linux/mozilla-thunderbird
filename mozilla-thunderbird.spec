@@ -1,3 +1,6 @@
+# NOTE
+# - we use icedove in pld linux
+#
 # TODO:
 # - CHECK all features of enigmail
 # - separate spec for enigmail
