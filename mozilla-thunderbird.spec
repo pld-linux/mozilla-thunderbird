@@ -2,77 +2,123 @@
 # - we use icedove in pld linux
 #
 # TODO:
-# - CHECK all features of enigmail
 # - separate spec for enigmail
+# - build with system mozldap
 #
 # Conditional builds
 %bcond_without	enigmail	# don't build enigmail - GPG/PGP support
 %bcond_without	gnomeui		# disable gnomeui support
-%bcond_without	gnomevfs	# disable GNOME comp. (gconf+libgnome+gnomevfs) and gnomevfs ext.
-%bcond_without	gnome		# disable all GNOME components (gnome+gnomeui+gnomevfs)
+%bcond_without	gnome		# alias for gnomeui
 %bcond_without	ldap		# disable e-mail address lookups in LDAP directories
-#
+%bcond_without	lightning	# disable Sunbird/Lightning calendar
+%bcond_without	xulrunner	# build with xulrunner
+%bcond_with	crashreporter	# report crashes to crash-stats.mozilla.com
+
 %if %{without gnome}
 %undefine	with_gnomeui
-%undefine	with_gnomevfs
 %endif
-%define		enigmail_ver		0.95.6
-%define		thunderbird_ver		2.0.0.14
+
+%if 0%{?_enable_debug_packages} != 1
+%undefine	crashreporter
+%endif
+
+%define		enigmail_ver	1.3.5
+%define		nspr_ver	4.8.8
+%define		nss_ver		3.12.10
+
+%if %{without xulrunner}
+# The actual sqlite version (see RHBZ#480989):
+%define		sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo ERROR)
+%endif
 
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	%{thunderbird_ver}
-Release:	2
+Version:	10.0.2
+Release:	1
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
-Group:		Applications/Networking
-Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}-source.tar.bz2
-# Source0-md5:	e304510d08f7e226bbfff8e7e549232f
+Group:		X11/Applications/Networking
+Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
+# Source0-md5:	624bef982d7ac610b1175737d9905150
 Source1:	http://www.mozilla-enigmail.org/download/source/enigmail-%{enigmail_ver}.tar.gz
-# Source1-md5:	cfbe6ff77f80a349b396829757ad952a
-Source2:	%{name}.desktop
-Source3:	%{name}.sh
-Source4:	%{name}-enigmail.manifest
-Source5:	%{name}.png
-Patch1:		%{name}-lib_path.patch
-Patch2:		%{name}-enigmail-shared.patch
-Patch3:		%{name}-gcc.patch
-Patch4:		%{name}-fonts.patch
-Patch5:		%{name}-install.patch
-Patch6:		%{name}-myspell.patch
-Patch7:		%{name}-regionNames.patch
+# Source1-md5:	1b008b0d106e238c11e4bead08126bc0
+Source2:	%{name}.png
+Source4:	%{name}.desktop
+Source5:	%{name}.sh
+#Source4:	%{name}-enigmail.manifest
+#Patch1:		%{name}-lib_path.patch
+Patch1:		%{name}-enigmail-shared.patch
+#Patch2:		%{name}-gcc.patch
+Patch3:		%{name}-fonts.patch
+Patch4:		%{name}-install.patch
+#Patch6:		%{name}-myspell.patch
+Patch5:		%{name}-hunspell.patch
+Patch6:		%{name}-prefs.patch
+#Patch7:		%{name}-regionNames.patch
+Patch7:		%{name}-system-mozldap.patch
+Patch8:		%{name}-makefile.patch
+Patch11:	%{name}-crashreporter.patch
+Patch12:	%{name}-no-subshell.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 %{?with_gnomevfs:BuildRequires:	GConf2-devel >= 1.2.1}
+BuildRequires:	alsa-lib-devel
 BuildRequires:	automake
+BuildRequires:	bzip2-devel
+BuildRequires:	cairo-devel >= 1.10
+BuildRequires:	dbus-glib-devel >= 0.60
 BuildRequires:	freetype-devel >= 1:2.1.8
-%{?with_gnomevfs:BuildRequires:	gnome-vfs2-devel >= 2.0}
-BuildRequires:	gtk+2-devel >= 1:2.0.0
+BuildRequires:	glib2-devel >= 2.0
+BuildRequires:	gtk+2-devel >= 2:2.10.0
+BuildRequires:	hunspell-devel
 BuildRequires:	libIDL-devel >= 0.8.0
-%{?with_gnomevfs:BuildRequires:	libgnome-devel >= 2.0}
+%{?with_gnomeui:BuildRequires:	libgnome-devel >= 2.0}
+%{?with_gnomeui:BuildRequires:	libgnome-keyring-devel}
 %{?with_gnomeui:BuildRequires:	libgnomeui-devel >= 2.2.0}
+BuildRequires:	libiw-devel
 BuildRequires:	libjpeg-devel >= 6b
-BuildRequires:	libpng-devel >= 1.2.0
+BuildRequires:	libnotify-devel >= 0.4
+BuildRequires:	libpng-devel >= 1.4.1
 BuildRequires:	libstdc++-devel
-BuildRequires:	myspell-devel
-BuildRequires:	nspr-devel >= 1:4.6.1
-BuildRequires:	nss-devel >= 1:3.11.3
+BuildRequires:	nspr-devel >= 1:%{nspr_ver}
+BuildRequires:	nss-devel >= 1:%{nss_ver}
 BuildRequires:	pango-devel >= 1:1.1.0
+BuildRequires:	perl-base >= 1:5.6
+BuildRequires:	pkgconfig
+BuildRequires:	python >= 1:2.5
 BuildRequires:	sed >= 4.0
+BuildRequires:	sqlite3-devel >= 3.7.4
+BuildRequires:	startup-notification-devel >= 0.8
 BuildRequires:	xorg-lib-libXext-devel
-BuildRequires:	xorg-lib-libXft-devel >= 2.1
 BuildRequires:	xorg-lib-libXinerama-devel
-BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	xorg-lib-libXt-devel
+BuildRequires:	yasm
+BuildRequires:	zip
+%if %{with xulrunner}
+BuildRequires:	xulrunner-devel >= 2:%{version}
+%else
 Requires:	myspell-common
-Requires:	nspr >= 1:4.6.1
-Requires:	nss >= 1:3.11.3
+Requires:	nspr >= 1:%{nspr_ver}
+Requires:	nss >= 1:%{nss_ver}
+Requires:	sqlite3 >= %{sqlite_build_version}
+%endif
+Requires(post):	mktemp >= 1.5-18
+%if %{with xulrunner}
+%requires_eq_to	xulrunner xulrunner-devel
+%endif
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		filterout_cpp		-D_FORTIFY_SOURCE=[0-9]+
+
 # don't satisfy other packages (don't use %{name} here)
-%define		_noautoprovfiles	%{_libdir}/mozilla-thunderbird
+%define		_noautoprovfiles	%{_libdir}/mozilla-thunderbird/components
+# we don't want these to satisfy xulrunner-devel
+%define		_noautoprov		libmozjs.so libxpcom.so libxul.so
 # and as we don't provide them, don't require either
-%define		_noautoreq		libgfxpsshar.so libgkgfx.so libgtkembedmoz.so libgtkxtbin.so libldap50.so libmozjs.so libprldap50.so libssldap50.so libxpcom.so libxpcom_compat.so libxpcom_core.so
+%define		_noautoreq		libmozjs.so libxpcom.so libxul.so
+
+%define		topdir		%{_builddir}/%{name}-%{version}
+%define		objdir		%{topdir}/obj-%{_target_cpu}
 
 %description
 Thunderbird Community Edition is an open-source,fast and portable
@@ -82,13 +128,29 @@ email client.
 Thunderbird Community Edition jest open sourcowym, szybkim i
 przenośnym klientem poczty.
 
+%package addon-lightning
+Summary:	An integrated calendar for Mozilla Thunderbird
+Summary(pl.UTF-8):	Zintegrowany kalendarz dla Icedove
+License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
+Group:		Applications/Networking
+Requires:	%{name} = %{version}-%{release}
+
+%description addon-lightning
+Lightning is an calendar extension to Mozilla Thunderbird email
+client.
+
+%description addon-lightning -l pl.UTF-8
+Lightning to rozszerzenie do klienta poczty Mozilla Thunderbird
+dodające funkcjonalność kalendarza.
+
 %package addon-enigmail
 Summary:	Extension for the authentication and encryption features provided by GnuPG
 Summary(pl.UTF-8):	Rozszerzenie do uwierzytelniania i szyfrowania zapewnianego przez GnuPG
 License:	MPL/LGPL
 Group:		Applications/Networking
 URL:		http://enigmail.mozdev.org/
-Requires:	%{name} = %{thunderbird_ver}-%{release}
+Requires:	%{name} = %{version}-%{release}
+Requires:	gnupg
 
 %description addon-enigmail
 Enigmail is an extension to the mail client of Mozilla Thunderbird
@@ -119,29 +181,40 @@ Główne możliwości:
 
 %prep
 %setup -q -c
+mv comm-release mozilla
 cd mozilla
-%{?with_enigmail:tar xvfz %{SOURCE1} -C mailnews/extensions}
-%patch1 -p1
-%{?with_enigmail:%patch2 -p1}
+%{?with_enigmail:%{__gzip} -dc %{SOURCE1} | %{__tar} xf - -C mailnews/extensions}
+%{?with_enigmail:%patch1 -p1}
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p2
+%patch11 -p2
+%patch12 -p1
 
-:> config/gcc_hidden.h
+#:> config/gcc_hidden.h
 
 %build
 cd mozilla
-export CFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
-export CXXFLAGS="%{rpmcflags} `%{_bindir}/pkg-config mozilla-nspr --cflags-only-I`"
+cp -f %{_datadir}/automake/config.* mozilla/build/autoconf
+cp -f %{_datadir}/automake/config.* mozilla/nsprpub/build/autoconf
+cp -f %{_datadir}/automake/config.* ldap/sdks/c-sdk/config/autoconf
 
-cp -f %{_datadir}/automake/config.* build/autoconf
-cp -f %{_datadir}/automake/config.* nsprpub/build/autoconf
-cp -f %{_datadir}/automake/config.* directory/c-sdk/config/autoconf
+install -d libxul-sdk
+ln -snf %{_libdir}/xulrunner-sdk libxul-sdk/sdk
 
-cat << 'EOF' > .mozconfig
-. $topsrcdir/mail/config/mozconfig
+cat << EOF > .mozconfig
+mk_add_options MOZ_OBJDIR=%{objdir}
+
+export CFLAGS="%{rpmcflags} -fpermissive -I/usr/include/xulrunner"
+export CXXFLAGS="%{rpmcflags} -fpermissive -I/usr/include/xulrunner"
+
+%if %{with crashreporter}
+export MOZ_DEBUG_SYMBOLS=1
+%endif
+
+# Options for 'configure' (same as command-line options).
 
 ac_add_options --prefix=%{_prefix}
 ac_add_options --exec-prefix=%{_exec_prefix}
@@ -157,131 +230,204 @@ ac_add_options --sharedstatedir=%{_sharedstatedir}
 ac_add_options --mandir=%{_mandir}
 ac_add_options --infodir=%{_infodir}
 %if %{?debug:1}0
+ac_add_options --disable-optimize
 ac_add_options --enable-debug
 ac_add_options --enable-debug-modules
+ac_add_options --enable-debugger-info-modules
+ac_add_options --enable-crash-on-assert
 %else
 ac_add_options --disable-debug
 ac_add_options --disable-debug-modules
+ac_add_options --disable-logging
+ac_add_options --enable-optimize="%{rpmcflags} -Os"
 %endif
+ac_add_options --disable-strip
+ac_add_options --disable-strip-libs
 %if %{with tests}
 ac_add_options --enable-tests
 %else
 ac_add_options --disable-tests
 %endif
+ac_add_options --enable-gio
 %if %{with gnomeui}
 ac_add_options --enable-gnomeui
 %else
 ac_add_options --disable-gnomeui
 %endif
-%if %{with gnomevfs}
-ac_add_options --enable-gnomevfs
-%else
 ac_add_options --disable-gnomevfs
-%endif
 %if %{with ldap}
 ac_add_options --enable-ldap
+ac_add_options --with-system-ldap
 %else
 ac_add_options --disable-ldap
 %endif
+%if %{with crashreporter}
+ac_add_options --enable-crashreporter
+%else
+ac_add_options --disable-crashreporter
+%endif
+ac_add_options --disable-xterm-updates
+ac_add_options --enable-postscript
+%if %{with lightning}
+ac_add_options --enable-calendar
+%else
+ac_add_options --disable-calendar
+%endif
 ac_add_options --disable-installer
 ac_add_options --disable-jsd
+ac_add_options --disable-updater
 ac_add_options --disable-xprint
+ac_add_options --disable-permissions
+ac_add_options --disable-pref-extensions
 ac_add_options --enable-canvas
 ac_add_options --enable-crypto
-ac_add_options --enable-default-toolkit="gtk2"
-ac_add_options --enable-extensions="pref,cookie,wallet,spellcheck"
 ac_add_options --enable-mathml
-ac_add_options --enable-optimize="%{rpmcflags}"
 ac_add_options --enable-pango
 ac_add_options --enable-reorder
-ac_add_options --disable-strip
-ac_add_options --disable-strip-libs
-ac_add_options --enable-system-cairo
-ac_add_options --enable-system-myspell
+ac_add_options --enable-startup-notification
 ac_add_options --enable-svg
+ac_add_options --enable-system-cairo
+ac_add_options --enable-system-hunspell
+ac_add_options --enable-system-sqlite
 ac_add_options --enable-xft
+ac_add_options --enable-application=mail
+ac_add_options --enable-default-toolkit=cairo-gtk2
 ac_add_options --enable-xinerama
+ac_add_options --with-distribution-id=org.pld-linux
+%if %{with xulrunner}
+#ac_add_options --with-libxul-sdk=$(pwd)/libxul-sdk/sdk
+ac_add_options --with-system-libxul
+ac_add_options --enable-shared
+ac_add_options --enable-libxul
+%else
+ac_add_options --disable-xul
+%endif
+ac_add_options --with-pthreads
+ac_add_options --with-system-bz2
 ac_add_options --with-system-jpeg
 ac_add_options --with-system-nspr
 ac_add_options --with-system-nss
 ac_add_options --with-system-png
 ac_add_options --with-system-zlib
-ac_add_options --with-pthreads
 ac_add_options --enable-single-profile
 ac_add_options --disable-profilesharing
 ac_add_options --with-default-mozilla-five-home=%{_libdir}/%{name}
 EOF
 
 %{__make} -j1 -f client.mk build_all \
+	STRIP="/bin/true" \
+	MOZ_MAKE_FLAGS="%{?_smp_mflags}" \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
+%if %{with crashreporter}
+# create debuginfo for crash-stats.mozilla.com
+%{__make} -j1 -C obj-%{_target_cpu} buildsymbols
+%endif
+
 %if %{with enigmail}
-	cd mailnews/extensions/enigmail
-	./makemake -r
-	%{__make}
+cd mailnews/extensions/enigmail
+./makemake -r -o %{objdir}
+%{__make} -C %{objdir}/mailnews/extensions/enigmail \
+	STRIP="/bin/true" \
+	CC="%{__cc}" \
+	CXX="%{__cxx}"
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_pixmapsdir},%{_desktopdir}} \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir}/%{name},%{_datadir}/%{name},%{_pixmapsdir},%{_desktopdir}}
 
-cd mozilla
-%{__make} -C xpinstall/packager stage-package \
+cd %{objdir}
+%{__make} -C mail/installer stage-package \
 	DESTDIR=$RPM_BUILD_ROOT \
-	MOZ_PKG_APPDIR=%{_libdir}/%{name} \
+	MOZ_PKG_DIR=%{_libdir}/%{name} \
 	PKG_SKIP_STRIP=1
+
+# Enable crash reporter for Firefox application
+%if %{with crashreporter}
+%{__sed} -i -e 's/\[Crash Reporter\]/[Crash Reporter]\nEnabled=1/' $RPM_BUILD_ROOT%{_libdir}/%{name}/application.ini
+
+# Add debuginfo for crash-stats.mozilla.com
+install -d $RPM_BUILD_ROOT%{_exec_prefix}/lib/debug%{_libdir}/%{name}
+cp -a mozilla/dist/%{name}-%{version}.en-US.linux-*.crashreporter-symbols.zip $RPM_BUILD_ROOT%{_prefix}/lib/debug%{_libdir}/%{name}
+%endif
+
+# copy manually lightning files, somewhy they are not installed by make
+cp -a mozilla/dist/bin/extensions/calendar-timezones@mozilla.org \
+	mozilla/dist/bin/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103} \
+	$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions
 
 # move arch independant ones to datadir
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/chrome
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/defaults
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs $RPM_BUILD_ROOT%{_datadir}/%{name}/greprefs
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/icons
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d $RPM_BUILD_ROOT%{_datadir}/%{name}/init.d
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/isp $RPM_BUILD_ROOT%{_datadir}/%{name}/isp
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/modules $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/searchplugins $RPM_BUILD_ROOT%{_datadir}/%{name}/searchplugins
 ln -s ../../share/%{name}/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome
 ln -s ../../share/%{name}/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults
-ln -s ../../share/%{name}/greprefs $RPM_BUILD_ROOT%{_libdir}/%{name}/greprefs
-ln -s ../../share/%{name}/icons $RPM_BUILD_ROOT%{_libdir}/%{name}/icons
-ln -s ../../share/%{name}/init.d $RPM_BUILD_ROOT%{_libdir}/%{name}/init.d
 ln -s ../../share/%{name}/isp $RPM_BUILD_ROOT%{_libdir}/%{name}/isp
+ln -s ../../share/%{name}/modules $RPM_BUILD_ROOT%{_libdir}/%{name}/modules
 ln -s ../../share/%{name}/res $RPM_BUILD_ROOT%{_libdir}/%{name}/res
+ln -s ../../share/%{name}/searchplugins $RPM_BUILD_ROOT%{_libdir}/%{name}/searchplugins
 
-rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
+# dir for arch independant extensions besides arch dependant extensions
+# see mozilla/xpcom/build/nsXULAppAPI.h
+# XRE_SYS_LOCAL_EXTENSION_PARENT_DIR and XRE_SYS_SHARE_EXTENSION_PARENT_DIR
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/extensions
+
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
 ln -s %{_datadir}/myspell $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
 
-%{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE3} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/%{name}/hyphenation
+ln -s %{_datadir}/myspell $RPM_BUILD_ROOT%{_libdir}/%{name}/hyphenation
+
+%{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE5} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
 
-install %{SOURCE2} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
+cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_desktopdir}/%{name}.desktop
+cp -p %{SOURCE2} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
+
+# files created by regxpcom -register in post
+touch $RPM_BUILD_ROOT%{_libdir}/%{name}/components/compreg.dat
+touch $RPM_BUILD_ROOT%{_libdir}/%{name}/components/xpti.dat
+cat << 'EOF' > $RPM_BUILD_ROOT%{_libdir}/%{name}/register
+#!/bin/sh
+umask 022
+# make temporary HOME, as it attempts to touch files in $HOME/.mozilla
+# dangerous if you run this with sudo with keep_env += HOME
+# also TMPDIR could be pointing to sudo user's homedir so we reset that too.
+t=$(mktemp -d)
+%{__rm} -f %{_libdir}/%{name}/components/{compreg,xpti}.dat
+TMPDIR= TMP= HOME=$t %{_libdir}/%{name}/icedove -register
+rm -rf $t
+EOF
+chmod a+rx $RPM_BUILD_ROOT%{_libdir}/%{name}/register
 
 %if %{with enigmail}
-_enig_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
-install -d $_enig_dir/chrome
-install -d $_enig_dir/components
-install -d $_enig_dir/defaults/preferences
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail.jar $_enig_dir/chrome
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-skin-tbird.jar $_enig_dir/chrome
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/enig* $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/libenigmime.so $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/ipc.xpt $_enig_dir/components
-mv -f $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults/preferences/enigmail.js $_enig_dir/defaults/preferences
-cp -f mailnews/extensions/enigmail/package/install.rdf $_enig_dir
-rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults/preferences
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-en-US.jar
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmail-skin.jar
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome/enigmime.jar
-rm -rf $RPM_BUILD_ROOT%{_libdir}/%{name}/components/enig*
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/libenigmime.so
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/components/ipc.xpt
-cp -f %{SOURCE4} $_enig_dir/chrome.manifest
-cp -f %{SOURCE5} $RPM_BUILD_ROOT%{_pixmapsdir}/mozilla-thunderbird.png
+ext_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
+install -d $ext_dir/{chrome,components,defaults/preferences}
+cd mozilla/dist/bin
+#cp -rfLp chrome/enigmail.jar $ext_dir/chrome
+#cp -rfLp chrome/enigmime.jar $ext_dir/chrome
+cp -rfLp components/enig* $ext_dir/components
+cp -rfLp components/libenigmime.so $ext_dir/components
+cp -rfLp components/libipc.so $ext_dir/components
+cp -rfLp components/ipc.xpt $ext_dir/components
+cp -rfLp defaults/preferences/enigmail.js $ext_dir/defaults/preferences
+cd -
+cp -p %{topdir}/mozilla/mailnews/extensions/enigmail/package/install.rdf $ext_dir
+cp -p %{topdir}/mozilla/mailnews/extensions/enigmail/package/chrome.manifest $ext_dir/chrome.manifest
 %endif
 
-# win32 stuff
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/dirver
+# never package these. always remove
+# nss
+%{__rm} -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lib{freebl3,nss3,nssckbi,nssdbm3,nssutil3,smime3,softokn3,ssl3}.*
+# nspr
+%{__rm} -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lib{nspr4,plc4,plds4}.so
+# mozldap
+%{__rm} -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lib{ldap,ldif,prldap,ssldap}60.so
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -290,7 +436,7 @@ rm -rf $RPM_BUILD_ROOT
 if [ -d %{_libdir}/%{name}/dictionaries ] && [ ! -L %{_libdir}/%{name}/dictionaries ]; then
 	mv -v %{_libdir}/%{name}/dictionaries{,.rpmsave}
 fi
-for d in chrome defaults greprefs icons init.d isp res; do
+for d in chrome defaults icons isp modules res searchplugins; do
 	if [ -d %{_libdir}/%{name}/$d ] && [ ! -L %{_libdir}/%{name}/$d ]; then
 		install -d %{_datadir}/%{name}
 		mv %{_libdir}/%{name}/$d %{_datadir}/%{name}/$d
@@ -298,284 +444,100 @@ for d in chrome defaults greprefs icons init.d isp res; do
 done
 exit 0
 
+%post
+%{_libdir}/%{name}/register || :
+
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/mozilla-thunderbird
 %attr(755,root,root) %{_bindir}/thunderbird
 %dir %{_libdir}/%{name}
-%attr(755,root,root) %{_libdir}/%{name}/libgfxpsshar.so
-%attr(755,root,root) %{_libdir}/%{name}/libgkgfx.so
-%attr(755,root,root) %{_libdir}/%{name}/libgtkembedmoz.so
-%attr(755,root,root) %{_libdir}/%{name}/libgtkxtbin.so
-%attr(755,root,root) %{_libdir}/%{name}/libmozjs.so
-%attr(755,root,root) %{_libdir}/%{name}/libxpcom.so
-%attr(755,root,root) %{_libdir}/%{name}/libxpcom_compat.so
-%attr(755,root,root) %{_libdir}/%{name}/libxpcom_core.so
-%attr(755,root,root) %{_libdir}/%{name}/libxpistub.so
-%if %{with ldap}
-%attr(755,root,root) %{_libdir}/%{name}/libldap50.so
-%attr(755,root,root) %{_libdir}/%{name}/libprldap50.so
-%endif
-%attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
-%attr(755,root,root) %{_libdir}/%{name}/regxpcom
-%attr(755,root,root) %{_libdir}/%{name}/run-mozilla.sh
-%attr(755,root,root) %{_libdir}/%{name}/thunderbird-bin
-%attr(755,root,root) %{_libdir}/%{name}/thunderbird
-%{_libdir}/%{name}/LICENSE.txt
-%{_libdir}/%{name}/README.txt
-%attr(755,root,root) %{_libdir}/%{name}/xpcshell
-%attr(755,root,root) %{_libdir}/%{name}/xpicleanup
-%attr(755,root,root) %{_libdir}/%{name}/xpidl
-%attr(755,root,root) %{_libdir}/%{name}/xpt_dump
-%attr(755,root,root) %{_libdir}/%{name}/xpt_link
+%{_libdir}/%{name}/application.ini
+%{_libdir}/%{name}/platform.ini
+%{_libdir}/%{name}/blocklist.xml
+%{_libdir}/%{name}/chrome.manifest
+%{_libdir}/%{name}/greprefs.js
 %dir %{_libdir}/%{name}/components
-%attr(755,root,root) %{_libdir}/%{name}/components/libaccessibility.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libappcomps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libautoconfig.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libcaps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libchrome.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libcommandlines.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libcomposer.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libcookie.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libdocshell.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libeditor.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libembedcomponents.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libfileview.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libgfx_gtk.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libgfxps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libgklayout.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libhtmlpars.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libi18n.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libimglib2.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libimport.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libjar50.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmail.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmailcomps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmork.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmozfind.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmsgsmime.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libmyspell.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libnecko.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libnecko2.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libnsappshell.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libpipboot.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libpipnss.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libpippki.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libpref.so
-%attr(755,root,root) %{_libdir}/%{name}/components/librdf.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libremoteservice.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libspellchecker.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libstoragecomps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libsystem-pref.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libtoolkitcomps.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libtxmgr.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libuconv.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libucvmath.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libwallet.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libwalletviewers.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libwebbrwsr.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libwidget_gtk2.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libxpcom_compat_c.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libxpconnect.so
-%attr(755,root,root) %{_libdir}/%{name}/components/libxpinstall.so
-%{_libdir}/%{name}/components/accessibility-atk.xpt
-%{_libdir}/%{name}/components/accessibility.xpt
-%{_libdir}/%{name}/components/addrbook.xpt
-%{_libdir}/%{name}/components/alerts.xpt
-%{_libdir}/%{name}/components/appshell.xpt
-%{_libdir}/%{name}/components/appstartup.xpt
-%{_libdir}/%{name}/components/autocomplete.xpt
-%{_libdir}/%{name}/components/autoconfig.xpt
-%{_libdir}/%{name}/components/bookmarks.xpt
-%{_libdir}/%{name}/components/caps.xpt
-%{_libdir}/%{name}/components/chardet.xpt
-%{_libdir}/%{name}/components/chrome.xpt
-%{_libdir}/%{name}/components/commandhandler.xpt
-%{_libdir}/%{name}/components/commandlines.xpt
-%{_libdir}/%{name}/components/composer.xpt
-%{_libdir}/%{name}/components/content_base.xpt
-%{_libdir}/%{name}/components/content_html.xpt
-%{_libdir}/%{name}/components/content_htmldoc.xpt
-%{_libdir}/%{name}/components/content_xmldoc.xpt
-%{_libdir}/%{name}/components/content_xslt.xpt
-%{_libdir}/%{name}/components/content_xtf.xpt
-%{_libdir}/%{name}/components/cookie.xpt
-%{_libdir}/%{name}/components/docshell.xpt
-%{_libdir}/%{name}/components/dom.xpt
-%{_libdir}/%{name}/components/dom_base.xpt
-%{_libdir}/%{name}/components/dom_canvas.xpt
-%{_libdir}/%{name}/components/dom_core.xpt
-%{_libdir}/%{name}/components/dom_css.xpt
-%{_libdir}/%{name}/components/dom_events.xpt
-%{_libdir}/%{name}/components/dom_html.xpt
-%{_libdir}/%{name}/components/dom_loadsave.xpt
-%{_libdir}/%{name}/components/dom_range.xpt
-%{_libdir}/%{name}/components/dom_sidebar.xpt
-%{_libdir}/%{name}/components/dom_storage.xpt
-%{_libdir}/%{name}/components/dom_stylesheets.xpt
-%{_libdir}/%{name}/components/dom_svg.xpt
-%{_libdir}/%{name}/components/dom_traversal.xpt
-%{_libdir}/%{name}/components/dom_views.xpt
-%{_libdir}/%{name}/components/dom_xbl.xpt
-%{_libdir}/%{name}/components/dom_xpath.xpt
-%{_libdir}/%{name}/components/dom_xul.xpt
-%{_libdir}/%{name}/components/downloads.xpt
-%{_libdir}/%{name}/components/editor.xpt
-%{_libdir}/%{name}/components/embed_base.xpt
-%{_libdir}/%{name}/components/extensions.xpt
-%{_libdir}/%{name}/components/exthandler.xpt
-%{_libdir}/%{name}/components/fastfind.xpt
-%{_libdir}/%{name}/components/feeds.xpt
-%{_libdir}/%{name}/components/filepicker.xpt
-%{_libdir}/%{name}/components/find.xpt
-%{_libdir}/%{name}/components/gfx.xpt
-%{_libdir}/%{name}/components/gksvgrenderer.xpt
-%{_libdir}/%{name}/components/history.xpt
-%{_libdir}/%{name}/components/htmlparser.xpt
-%{_libdir}/%{name}/components/imglib2.xpt
-%{_libdir}/%{name}/components/impComm4xMail.xpt
-%{_libdir}/%{name}/components/import.xpt
-%{_libdir}/%{name}/components/inspector.xpt
-%{_libdir}/%{name}/components/intl.xpt
-%{_libdir}/%{name}/components/jar.xpt
-%{_libdir}/%{name}/components/jsconsole.xpt
-%{_libdir}/%{name}/components/layout_base.xpt
-%{_libdir}/%{name}/components/layout_printing.xpt
-%{_libdir}/%{name}/components/layout_xul.xpt
-%{_libdir}/%{name}/components/layout_xul_tree.xpt
-%{_libdir}/%{name}/components/locale.xpt
-%{_libdir}/%{name}/components/lwbrk.xpt
-%{_libdir}/%{name}/components/mailnews.xpt
-%{_libdir}/%{name}/components/mailprofilemigration.xpt
-%{_libdir}/%{name}/components/mailview.xpt
-%{_libdir}/%{name}/components/mime.xpt
-%{_libdir}/%{name}/components/mimetype.xpt
-%{_libdir}/%{name}/components/mozbrwsr.xpt
-%{_libdir}/%{name}/components/mozfind.xpt
-%{_libdir}/%{name}/components/msgbase.xpt
-%{_libdir}/%{name}/components/msgcompose.xpt
-%{_libdir}/%{name}/components/msgdb.xpt
-%{_libdir}/%{name}/components/msgimap.xpt
-%{_libdir}/%{name}/components/msglocal.xpt
-%{_libdir}/%{name}/components/msgnews.xpt
-%{_libdir}/%{name}/components/msgsearch.xpt
-%{_libdir}/%{name}/components/msgsmime.xpt
-%{_libdir}/%{name}/components/necko.xpt
-%{_libdir}/%{name}/components/necko_about.xpt
-%{_libdir}/%{name}/components/necko_cache.xpt
-%{_libdir}/%{name}/components/necko_cookie.xpt
-%{_libdir}/%{name}/components/necko_data.xpt
-%{_libdir}/%{name}/components/necko_dns.xpt
-%{_libdir}/%{name}/components/necko_file.xpt
-%{_libdir}/%{name}/components/necko_ftp.xpt
-%{_libdir}/%{name}/components/necko_http.xpt
-%{_libdir}/%{name}/components/necko_res.xpt
-%{_libdir}/%{name}/components/necko_socket.xpt
-%{_libdir}/%{name}/components/necko_strconv.xpt
-%{_libdir}/%{name}/components/necko_viewsource.xpt
-%{_libdir}/%{name}/components/pipboot.xpt
-%{_libdir}/%{name}/components/pipnss.xpt
-%{_libdir}/%{name}/components/pippki.xpt
-%{_libdir}/%{name}/components/pref.xpt
-%{_libdir}/%{name}/components/prefetch.xpt
-%{_libdir}/%{name}/components/profile.xpt
-%{_libdir}/%{name}/components/progressDlg.xpt
-%{_libdir}/%{name}/components/proxyObjInst.xpt
-%{_libdir}/%{name}/components/rdf.xpt
-%{_libdir}/%{name}/components/saxparser.xpt
-%{_libdir}/%{name}/components/shellservice.xpt
-%{_libdir}/%{name}/components/shistory.xpt
-%{_libdir}/%{name}/components/signonviewer.xpt
-%{_libdir}/%{name}/components/spellchecker.xpt
-%{_libdir}/%{name}/components/storage.xpt
-%{_libdir}/%{name}/components/toolkitprofile.xpt
-%{_libdir}/%{name}/components/toolkitremote.xpt
-%{_libdir}/%{name}/components/txmgr.xpt
-%{_libdir}/%{name}/components/txtsvc.xpt
-%{_libdir}/%{name}/components/uconv.xpt
-%{_libdir}/%{name}/components/unicharutil.xpt
-%{_libdir}/%{name}/components/update.xpt
-%{_libdir}/%{name}/components/uriloader.xpt
-%{_libdir}/%{name}/components/url-classifier.xpt
-%{_libdir}/%{name}/components/urlformatter.xpt
-%{_libdir}/%{name}/components/wallet.xpt
-%{_libdir}/%{name}/components/walleteditor.xpt
-%{_libdir}/%{name}/components/walletpreview.xpt
-%{_libdir}/%{name}/components/webBrowser_core.xpt
-%{_libdir}/%{name}/components/webbrowserpersist.xpt
-%{_libdir}/%{name}/components/webshell_idls.xpt
-%{_libdir}/%{name}/components/widget.xpt
-%{_libdir}/%{name}/components/windowds.xpt
-%{_libdir}/%{name}/components/windowwatcher.xpt
-%{_libdir}/%{name}/components/xpautocomplete.xpt
-%{_libdir}/%{name}/components/xpcom_base.xpt
-%{_libdir}/%{name}/components/xpcom_components.xpt
-%{_libdir}/%{name}/components/xpcom_ds.xpt
-%{_libdir}/%{name}/components/xpcom_io.xpt
-%{_libdir}/%{name}/components/xpcom_obsolete.xpt
-%{_libdir}/%{name}/components/xpcom_threads.xpt
-%{_libdir}/%{name}/components/xpcom_xpti.xpt
-%{_libdir}/%{name}/components/xpconnect.xpt
-%{_libdir}/%{name}/components/xpinstall.xpt
-%{_libdir}/%{name}/components/xulapp.xpt
-%{_libdir}/%{name}/components/xuldoc.xpt
-%{_libdir}/%{name}/components/xultmpl.xpt
+%attr(755,root,root) %{_libdir}/%{name}/components/*.so
 %{_libdir}/%{name}/components/*.js
-%if %{with ldap}
-%attr(755,root,root) %{_libdir}/%{name}/components/libmozldap.so
-%{_libdir}/%{name}/components/mozldap.xpt
-%endif
-# gnome subpackage?
-%if %{with gnomeui}
-%attr(755,root,root) %{_libdir}/%{name}/components/libimgicon.so
-%{_libdir}/%{name}/components/imgicon.xpt
-%endif
-%if %{with gnomevfs}
-%attr(755,root,root) %{_libdir}/%{name}/components/libmozgnome.so
-%{_libdir}/%{name}/components/mozgnome.xpt
-%endif
+%{_libdir}/%{name}/components/*.xpt
+%{_libdir}/%{name}/components/components.manifest
+%{_libdir}/%{name}/components/interfaces.manifest
+%attr(755,root,root) %{_libdir}/%{name}/libmozalloc.so
+%attr(755,root,root) %{_libdir}/%{name}/libxpcom.so
+%attr(755,root,root) %{_libdir}/%{name}/libxul.so
+%attr(755,root,root) %{_libdir}/%{name}/*.sh
+%attr(755,root,root) %{_libdir}/%{name}/*-bin
+%attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
+%attr(755,root,root) %{_libdir}/%{name}/thunderbird
+%attr(755,root,root) %{_libdir}/%{name}/plugin-container
+%attr(755,root,root) %{_libdir}/%{name}/register
 
 # symlinks
 %{_libdir}/%{name}/chrome
 %{_libdir}/%{name}/defaults
 %{_libdir}/%{name}/dictionaries
-%{_libdir}/%{name}/greprefs
-%{_libdir}/%{name}/icons
-%{_libdir}/%{name}/init.d
+%{_libdir}/%{name}/hyphenation
 %{_libdir}/%{name}/isp
+%{_libdir}/%{name}/modules
 %{_libdir}/%{name}/res
+%{_libdir}/%{name}/searchplugins
 
-%{_libdir}/%{name}/dependentlibs.list
-%{_libdir}/%{name}/updater
-%{_libdir}/%{name}/updater.ini
-%{?with_enigmail:%{_pixmapsdir}/*.png}
-%{_desktopdir}/*.desktop
+%{_pixmapsdir}/mozilla-thunderbird.png
+%{_desktopdir}/mozilla-thunderbird.desktop
 
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/chrome
 %{_datadir}/%{name}/defaults
-%{_datadir}/%{name}/greprefs
-%{_datadir}/%{name}/icons
-%{_datadir}/%{name}/init.d
+%{_datadir}/%{name}/extensions
 %{_datadir}/%{name}/isp
+%{_datadir}/%{name}/modules
 %{_datadir}/%{name}/res
+%{_datadir}/%{name}/searchplugins
+
+%if %{with crashreporter}
+%attr(755,root,root) %{_libdir}/%{name}/crashreporter
+%{_libdir}/%{name}/crashreporter.ini
+%{_libdir}/%{name}/Throbber-small.gif
+%endif
 
 %dir %{_libdir}/%{name}/extensions
 %{_libdir}/%{name}/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}
+
+# files created by regxpcom -register
+%ghost %{_libdir}/%{name}/components/compreg.dat
+%ghost %{_libdir}/%{name}/components/xpti.dat
+
+%if %{with lightning}
+%files addon-lightning
+%defattr(644,root,root,755)
+%dir %{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/application.ini
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/chrome
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/chrome.manifest
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/defaults
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/install.rdf
+%dir %{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/components
+%attr(755,root,root) %{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/components/*.so
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/components/*.js
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/components/*.manifest
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/components/*.xpt
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/modules
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/calendar-js
+%{_libdir}/%{name}/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/timezones.sqlite
+%{_libdir}/%{name}/extensions/calendar-timezones@mozilla.org
+%endif
 
 %if %{with enigmail}
 %files addon-enigmail
 %defattr(644,root,root,755)
 %dir %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/chrome
-%dir %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components
-%attr(755,root,root) %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/libenigmime.so
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/enigmail.xpt
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/enigmime.xpt
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/ipc.xpt
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/enigmail.js
-%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/enigprefs-service.js
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/defaults
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/chrome
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/chrome.manifest
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/install.rdf
+%dir %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components
+%attr(755,root,root) %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.so
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.xpt
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.js
 %endif
