@@ -11,7 +11,7 @@
 %bcond_without	gnome		# alias for gnomeui
 %bcond_without	ldap		# disable e-mail address lookups in LDAP directories
 %bcond_without	lightning	# disable Sunbird/Lightning calendar
-%bcond_without	xulrunner	# build with xulrunner
+%bcond_with	xulrunner	# system xulrunner
 %bcond_with	crashreporter	# report crashes to crash-stats.mozilla.com
 
 %if %{without gnome}
@@ -45,16 +45,12 @@ Source1:	http://www.mozilla-enigmail.org/download/source/enigmail-%{enigmail_ver
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
-#Source4:	%{name}-enigmail.manifest
-#Patch1:		%{name}-lib_path.patch
 Patch1:		%{name}-enigmail-shared.patch
-#Patch2:		%{name}-gcc.patch
+Patch2:		%{name}-system-xulrunner.patch
 Patch3:		%{name}-fonts.patch
 Patch4:		%{name}-install.patch
-#Patch6:		%{name}-myspell.patch
 Patch5:		%{name}-hunspell.patch
 Patch6:		%{name}-prefs.patch
-#Patch7:		%{name}-regionNames.patch
 Patch7:		%{name}-system-mozldap.patch
 Patch8:		%{name}-makefile.patch
 Patch11:	%{name}-crashreporter.patch
@@ -185,6 +181,7 @@ mv comm-release mozilla
 cd mozilla
 %{?with_enigmail:%{__gzip} -dc %{SOURCE1} | %{__tar} xf - -C mailnews/extensions}
 %{?with_enigmail:%patch1 -p1}
+%{?with_system_xulrunner:%patch2 -p1}
 %patch3 -p1
 %patch4 -p1
 %patch6 -p1
@@ -193,22 +190,18 @@ cd mozilla
 %patch11 -p2
 %patch12 -p1
 
-#:> config/gcc_hidden.h
-
 %build
 cd mozilla
 cp -f %{_datadir}/automake/config.* mozilla/build/autoconf
 cp -f %{_datadir}/automake/config.* mozilla/nsprpub/build/autoconf
 cp -f %{_datadir}/automake/config.* ldap/sdks/c-sdk/config/autoconf
 
-install -d libxul-sdk
-ln -snf %{_libdir}/xulrunner-sdk libxul-sdk/sdk
-
 cat << EOF > .mozconfig
 mk_add_options MOZ_OBJDIR=%{objdir}
 
-export CFLAGS="%{rpmcflags} -fpermissive -I/usr/include/xulrunner"
-export CXXFLAGS="%{rpmcflags} -fpermissive -I/usr/include/xulrunner"
+export CFLAGS="%{rpmcflags}"
+# use c++0x for char16_t (like in xulrunner 10.0.x)
+export CXXFLAGS="%{rpmcflags}%{?with_system_xulrunner: -std=gnu++0x}"
 
 %if %{with crashreporter}
 export MOZ_DEBUG_SYMBOLS=1
@@ -295,10 +288,9 @@ ac_add_options --enable-default-toolkit=cairo-gtk2
 ac_add_options --enable-xinerama
 ac_add_options --with-distribution-id=org.pld-linux
 %if %{with xulrunner}
-#ac_add_options --with-libxul-sdk=$(pwd)/libxul-sdk/sdk
+ac_add_options --enable-shared-js
+ac_add_options --with-libxul-sdk=$(pkg-config --variable=sdkdir libxul)
 ac_add_options --with-system-libxul
-ac_add_options --enable-shared
-ac_add_options --enable-libxul
 %else
 ac_add_options --disable-xul
 %endif
