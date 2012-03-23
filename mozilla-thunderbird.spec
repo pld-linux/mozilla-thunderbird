@@ -1,5 +1,4 @@
-# NOTE
-# - we use icedove in pld linux
+# NOTE: PLD distributes icedove instead
 #
 # TODO:
 # - separate spec for enigmail
@@ -126,7 +125,7 @@ przenośnym klientem poczty.
 
 %package addon-lightning
 Summary:	An integrated calendar for Mozilla Thunderbird
-Summary(pl.UTF-8):	Zintegrowany kalendarz dla Icedove
+Summary(pl.UTF-8):	Zintegrowany kalendarz dla klienta Mozilla Thunderbird
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		Applications/Networking
 Requires:	%{name} = %{version}-%{release}
@@ -208,7 +207,6 @@ export MOZ_DEBUG_SYMBOLS=1
 %endif
 
 # Options for 'configure' (same as command-line options).
-
 ac_add_options --prefix=%{_prefix}
 ac_add_options --exec-prefix=%{_exec_prefix}
 ac_add_options --bindir=%{_bindir}
@@ -306,7 +304,7 @@ ac_add_options --disable-profilesharing
 ac_add_options --with-default-mozilla-five-home=%{_libdir}/%{name}
 EOF
 
-%{__make} -j1 -f client.mk build_all \
+%{__make} -j1 -f client.mk build \
 	STRIP="/bin/true" \
 	MOZ_MAKE_FLAGS="%{?_smp_mflags}" \
 	CC="%{__cc}" \
