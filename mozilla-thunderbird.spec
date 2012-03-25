@@ -21,9 +21,9 @@
 %undefine	crashreporter
 %endif
 
-%define		enigmail_ver	1.3.5
-%define		nspr_ver	4.8.8
-%define		nss_ver		3.12.10
+%define		enigmail_ver	1.4
+%define		nspr_ver	4.9
+%define		nss_ver		3.13.3
 
 %if %{without xulrunner}
 # The actual sqlite version (see RHBZ#480989):
@@ -33,14 +33,14 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	10.0.2
+Version:	11.0
 Release:	1
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
-# Source0-md5:	624bef982d7ac610b1175737d9905150
+# Source0-md5:	1d7127a3282e62d95eb9b59d47291b70
 Source1:	http://www.mozilla-enigmail.org/download/source/enigmail-%{enigmail_ver}.tar.gz
-# Source1-md5:	1b008b0d106e238c11e4bead08126bc0
+# Source1-md5:	5cf3d9720ed1cda1b22eabe5457772c2
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
@@ -180,7 +180,7 @@ mv comm-release mozilla
 cd mozilla
 %{?with_enigmail:%{__gzip} -dc %{SOURCE1} | %{__tar} xf - -C mailnews/extensions}
 %{?with_enigmail:%patch1 -p1}
-%{?with_system_xulrunner:%patch2 -p1}
+%{?with_xulrunner:%patch2 -p1}
 %patch3 -p1
 %patch4 -p1
 %patch6 -p1
@@ -199,8 +199,7 @@ cat << EOF > .mozconfig
 mk_add_options MOZ_OBJDIR=%{objdir}
 
 export CFLAGS="%{rpmcflags}"
-# use c++0x for char16_t (like in xulrunner 10.0.x)
-export CXXFLAGS="%{rpmcflags}%{?with_system_xulrunner: -std=gnu++0x}"
+export CXXFLAGS="%{rpmcflags}"
 
 %if %{with crashreporter}
 export MOZ_DEBUG_SYMBOLS=1
@@ -265,7 +264,6 @@ ac_add_options --enable-calendar
 ac_add_options --disable-calendar
 %endif
 ac_add_options --disable-installer
-ac_add_options --disable-jsd
 ac_add_options --disable-updater
 ac_add_options --disable-xprint
 ac_add_options --disable-permissions
@@ -289,8 +287,6 @@ ac_add_options --with-distribution-id=org.pld-linux
 ac_add_options --enable-shared-js
 ac_add_options --with-libxul-sdk=$(pkg-config --variable=sdkdir libxul)
 ac_add_options --with-system-libxul
-%else
-ac_add_options --disable-xul
 %endif
 ac_add_options --with-pthreads
 ac_add_options --with-system-bz2
@@ -353,25 +349,28 @@ mv $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/c
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/defaults
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/isp $RPM_BUILD_ROOT%{_datadir}/%{name}/isp
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/modules $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
 mv $RPM_BUILD_ROOT%{_libdir}/%{name}/searchplugins $RPM_BUILD_ROOT%{_datadir}/%{name}/searchplugins
 ln -s ../../share/%{name}/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/chrome
 ln -s ../../share/%{name}/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults
 ln -s ../../share/%{name}/isp $RPM_BUILD_ROOT%{_libdir}/%{name}/isp
 ln -s ../../share/%{name}/modules $RPM_BUILD_ROOT%{_libdir}/%{name}/modules
-ln -s ../../share/%{name}/res $RPM_BUILD_ROOT%{_libdir}/%{name}/res
 ln -s ../../share/%{name}/searchplugins $RPM_BUILD_ROOT%{_libdir}/%{name}/searchplugins
+%if %{without xulrunner}
+mv $RPM_BUILD_ROOT%{_libdir}/%{name}/res $RPM_BUILD_ROOT%{_datadir}/%{name}/res
+ln -s ../../share/%{name}/res $RPM_BUILD_ROOT%{_libdir}/%{name}/res
+%endif
 
 # dir for arch independant extensions besides arch dependant extensions
 # see mozilla/xpcom/build/nsXULAppAPI.h
 # XRE_SYS_LOCAL_EXTENSION_PARENT_DIR and XRE_SYS_SHARE_EXTENSION_PARENT_DIR
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/extensions
 
+%if %{without xulrunner}
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
 ln -s %{_datadir}/myspell $RPM_BUILD_ROOT%{_libdir}/%{name}/dictionaries
-
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/%{name}/hyphenation
 ln -s %{_datadir}/myspell $RPM_BUILD_ROOT%{_libdir}/%{name}/hyphenation
+%endif
 
 %{__sed} -e 's,@LIBDIR@,%{_libdir},' %{SOURCE5} > $RPM_BUILD_ROOT%{_bindir}/mozilla-thunderbird
 ln -s %{name} $RPM_BUILD_ROOT%{_bindir}/thunderbird
@@ -390,7 +389,7 @@ umask 022
 # also TMPDIR could be pointing to sudo user's homedir so we reset that too.
 t=$(mktemp -d)
 %{__rm} -f %{_libdir}/%{name}/components/{compreg,xpti}.dat
-TMPDIR= TMP= HOME=$t %{_libdir}/%{name}/icedove -register
+TMPDIR= TMP= HOME=$t %{_libdir}/%{name}/thunderbird -register
 rm -rf $t
 EOF
 chmod a+rx $RPM_BUILD_ROOT%{_libdir}/%{name}/register
@@ -443,35 +442,39 @@ exit 0
 %attr(755,root,root) %{_bindir}/thunderbird
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/application.ini
-%{_libdir}/%{name}/platform.ini
 %{_libdir}/%{name}/blocklist.xml
 %{_libdir}/%{name}/chrome.manifest
-%{_libdir}/%{name}/greprefs.js
 %dir %{_libdir}/%{name}/components
-%attr(755,root,root) %{_libdir}/%{name}/components/*.so
 %{_libdir}/%{name}/components/*.js
 %{_libdir}/%{name}/components/*.xpt
 %{_libdir}/%{name}/components/components.manifest
 %{_libdir}/%{name}/components/interfaces.manifest
+%attr(755,root,root) %{_libdir}/%{name}/*.sh
+%attr(755,root,root) %{_libdir}/%{name}/*-bin
+%attr(755,root,root) %{_libdir}/%{name}/thunderbird
+%attr(755,root,root) %{_libdir}/%{name}/register
+%if %{without xulrunner}
+%{_libdir}/%{name}/platform.ini
+%{_libdir}/%{name}/greprefs.js
+%attr(755,root,root) %{_libdir}/%{name}/components/*.so
 %attr(755,root,root) %{_libdir}/%{name}/libmozalloc.so
 %attr(755,root,root) %{_libdir}/%{name}/libxpcom.so
 %attr(755,root,root) %{_libdir}/%{name}/libxul.so
-%attr(755,root,root) %{_libdir}/%{name}/*.sh
-%attr(755,root,root) %{_libdir}/%{name}/*-bin
 %attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
-%attr(755,root,root) %{_libdir}/%{name}/thunderbird
 %attr(755,root,root) %{_libdir}/%{name}/plugin-container
-%attr(755,root,root) %{_libdir}/%{name}/register
+%endif
 
 # symlinks
 %{_libdir}/%{name}/chrome
 %{_libdir}/%{name}/defaults
-%{_libdir}/%{name}/dictionaries
-%{_libdir}/%{name}/hyphenation
 %{_libdir}/%{name}/isp
 %{_libdir}/%{name}/modules
-%{_libdir}/%{name}/res
 %{_libdir}/%{name}/searchplugins
+%if %{without xulrunner}
+%{_libdir}/%{name}/dictionaries
+%{_libdir}/%{name}/hyphenation
+%{_libdir}/%{name}/res
+%endif
 
 %{_pixmapsdir}/mozilla-thunderbird.png
 %{_desktopdir}/mozilla-thunderbird.desktop
@@ -482,8 +485,10 @@ exit 0
 %{_datadir}/%{name}/extensions
 %{_datadir}/%{name}/isp
 %{_datadir}/%{name}/modules
-%{_datadir}/%{name}/res
 %{_datadir}/%{name}/searchplugins
+%if %{without xulrunner}
+%{_datadir}/%{name}/res
+%endif
 
 %if %{with crashreporter}
 %attr(755,root,root) %{_libdir}/%{name}/crashreporter
