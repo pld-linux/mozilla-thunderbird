@@ -21,9 +21,11 @@
 %undefine	crashreporter
 %endif
 
-%define		enigmail_ver	1.4
+%define		enigmail_ver	1.4.1
 %define		nspr_ver	4.9
 %define		nss_ver		3.13.3
+
+%define		xulrunner_ver	2:12.0
 
 %if %{without xulrunner}
 # The actual sqlite version (see RHBZ#480989):
@@ -33,14 +35,14 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	11.0
+Version:	12.0.1
 Release:	1
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
-# Source0-md5:	1d7127a3282e62d95eb9b59d47291b70
+# Source0-md5:	64cacde4cb2b1e8736f1c3a0ea6a02db
 Source1:	http://www.mozilla-enigmail.org/download/source/enigmail-%{enigmail_ver}.tar.gz
-# Source1-md5:	5cf3d9720ed1cda1b22eabe5457772c2
+# Source1-md5:	0eba75fbcf8f0bb32d538df102fbb8e9
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
@@ -52,10 +54,12 @@ Patch5:		%{name}-hunspell.patch
 Patch6:		%{name}-prefs.patch
 Patch7:		%{name}-system-mozldap.patch
 Patch8:		%{name}-makefile.patch
+# this is only workaround, check if it is fixed with newer firefox
+Patch9:		%{name}-bug-722975-workaround.patch
 Patch11:	%{name}-crashreporter.patch
 Patch12:	%{name}-no-subshell.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
-%{?with_gnomevfs:BuildRequires:	GConf2-devel >= 1.2.1}
+BuildRequires:	GConf2-devel >= 1.2.1
 BuildRequires:	alsa-lib-devel
 BuildRequires:	automake
 BuildRequires:	bzip2-devel
@@ -76,7 +80,7 @@ BuildRequires:	libpng-devel >= 1.4.1
 BuildRequires:	libstdc++-devel
 BuildRequires:	nspr-devel >= 1:%{nspr_ver}
 BuildRequires:	nss-devel >= 1:%{nss_ver}
-BuildRequires:	pango-devel >= 1:1.1.0
+BuildRequires:	pango-devel >= 1:1.14.0
 BuildRequires:	perl-base >= 1:5.6
 BuildRequires:	pkgconfig
 BuildRequires:	python >= 1:2.5
@@ -89,7 +93,7 @@ BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	yasm
 BuildRequires:	zip
 %if %{with xulrunner}
-BuildRequires:	xulrunner-devel >= 2:%{version}
+BuildRequires:	xulrunner-devel >= %{xulrunner_ver}
 %else
 Requires:	myspell-common
 Requires:	nspr >= 1:%{nspr_ver}
@@ -186,6 +190,9 @@ cd mozilla
 %patch6 -p1
 %patch7 -p1
 %patch8 -p2
+cd mozilla
+%patch9 -p1
+cd -
 %patch11 -p2
 %patch12 -p1
 
@@ -422,6 +429,8 @@ cp -p %{topdir}/mozilla/mailnews/extensions/enigmail/package/chrome.manifest $ex
 %{__rm} -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lib{nspr4,plc4,plds4}.so
 # mozldap
 %{__rm} -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lib{ldap,ldif,prldap,ssldap}60.so
+# testpilot quiz
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/distribution/extensions/tbtestpilot@labs.mozilla.com.xpi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
