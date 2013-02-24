@@ -21,11 +21,11 @@
 %undefine	crashreporter
 %endif
 
-%define		enigmail_ver	1.4.1
-%define		nspr_ver	4.9
-%define		nss_ver		3.13.3
+%define		enigmail_ver	1.5.1
+%define		nspr_ver	4.9.3
+%define		nss_ver		3.14.1
 
-%define		xulrunner_ver	2:12.0
+%define		xulrunner_ver	2:17.0
 
 %if %{without xulrunner}
 # The actual sqlite version (see RHBZ#480989):
@@ -35,29 +35,30 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	12.0.1
+Version:	17.0.3
 Release:	1
 License:	MPL 1.1 or GPL v2+ or LGPL v2.1+
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
-# Source0-md5:	64cacde4cb2b1e8736f1c3a0ea6a02db
+# Source0-md5:	180f7768f6419182ea78eeb80da7f588
 Source1:	http://www.mozilla-enigmail.org/download/source/enigmail-%{enigmail_ver}.tar.gz
-# Source1-md5:	0eba75fbcf8f0bb32d538df102fbb8e9
+# Source1-md5:	3e71f84ed2c11471282412ebe4f5eb2d
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
 Patch1:		%{name}-enigmail-shared.patch
-Patch2:		%{name}-system-xulrunner.patch
 Patch3:		%{name}-fonts.patch
 Patch4:		%{name}-install.patch
 Patch5:		%{name}-hunspell.patch
 Patch6:		%{name}-prefs.patch
 Patch7:		%{name}-system-mozldap.patch
 Patch8:		%{name}-makefile.patch
-# this is only workaround, check if it is fixed with newer firefox
-Patch9:		%{name}-bug-722975-workaround.patch
+Patch9:		%{name}-system-cairo.patch
 Patch11:	%{name}-crashreporter.patch
 Patch12:	%{name}-no-subshell.patch
+# Edit patch below and restore --system-site-packages when system virtualenv gets 1.7 upgrade
+Patch13:	%{name}-system-virtualenv.patch
+Patch14:	%{name}-gyp-slashism.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	GConf2-devel >= 1.2.1
 BuildRequires:	alsa-lib-devel
@@ -74,7 +75,9 @@ BuildRequires:	libIDL-devel >= 0.8.0
 %{?with_gnomeui:BuildRequires:	libgnome-keyring-devel}
 %{?with_gnomeui:BuildRequires:	libgnomeui-devel >= 2.2.0}
 BuildRequires:	libiw-devel
+# requires libjpeg-turbo implementing at least libjpeg 6b API
 BuildRequires:	libjpeg-devel >= 6b
+BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libnotify-devel >= 0.4
 BuildRequires:	libpng-devel >= 1.4.1
 BuildRequires:	libstdc++-devel
@@ -94,6 +97,7 @@ BuildRequires:	yasm
 BuildRequires:	zip
 %if %{with xulrunner}
 BuildRequires:	xulrunner-devel >= %{xulrunner_ver}
+BuildRequires:	xulrunner-devel < 2:18
 %else
 Requires:	myspell-common
 Requires:	nspr >= 1:%{nspr_ver}
@@ -104,17 +108,21 @@ Requires(post):	mktemp >= 1.5-18
 %if %{with xulrunner}
 %requires_eq_to	xulrunner xulrunner-devel
 %endif
+Requires:	libjpeg-turbo
 Obsoletes:	mozilla-thunderbird-dictionary-en-US
+Conflicts:	mozilla-thunderbird-lang-resources < %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		filterout_cpp		-D_FORTIFY_SOURCE=[0-9]+
 
 # don't satisfy other packages (don't use %{name} here)
 %define		_noautoprovfiles	%{_libdir}/mozilla-thunderbird/components
-# we don't want these to satisfy xulrunner-devel
-%define		_noautoprov		libmozjs.so libxpcom.so libxul.so
+%if %{without xulrunner}
+# we don't want these to satisfy packages depending on xulrunner
+%define		_noautoprov		libmozalloc.so libxpcom.so libxul.so
 # and as we don't provide them, don't require either
-%define		_noautoreq		libmozjs.so libxpcom.so libxul.so
+%define		_noautoreq		libmozalloc.so libxpcom.so libxul.so
+%endif
 
 %define		topdir		%{_builddir}/%{name}-%{version}
 %define		objdir		%{topdir}/obj-%{_target_cpu}
@@ -180,21 +188,20 @@ Główne możliwości:
 
 %prep
 %setup -q -c
-mv comm-release mozilla
+mv comm-esr17 mozilla
 cd mozilla
 %{?with_enigmail:%{__gzip} -dc %{SOURCE1} | %{__tar} xf - -C mailnews/extensions}
 %{?with_enigmail:%patch1 -p1}
-%{?with_xulrunner:%patch2 -p1}
 %patch3 -p1
 %patch4 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p2
-cd mozilla
 %patch9 -p1
-cd -
 %patch11 -p2
 %patch12 -p1
+%patch13 -p1
+%patch14 -p1
 
 %build
 cd mozilla
@@ -310,6 +317,7 @@ EOF
 %{__make} -j1 -f client.mk build \
 	STRIP="/bin/true" \
 	MOZ_MAKE_FLAGS="%{?_smp_mflags}" \
+	XLIBS="-lX11 -lXt" \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
 
@@ -322,6 +330,11 @@ EOF
 cd mailnews/extensions/enigmail
 ./makemake -r -o %{objdir}
 %{__make} -C %{objdir}/mailnews/extensions/enigmail \
+	STRIP="/bin/true" \
+	CC="%{__cc}" \
+	CXX="%{__cxx}"
+
+%{__make} -C %{objdir}/mailnews/extensions/enigmail xpi \
 	STRIP="/bin/true" \
 	CC="%{__cc}" \
 	CXX="%{__cxx}"
@@ -342,7 +355,7 @@ cd %{objdir}
 ln -s ../xulrunner $RPM_BUILD_ROOT%{_libdir}/%{name}/xulrunner
 %endif
  
-# Enable crash reporter for Firefox application
+# Enable crash reporter for Thunderbird application
 %if %{with crashreporter}
 %{__sed} -i -e 's/\[Crash Reporter\]/[Crash Reporter]\nEnabled=1/' $RPM_BUILD_ROOT%{_libdir}/%{name}/application.ini
 
@@ -408,15 +421,14 @@ chmod a+rx $RPM_BUILD_ROOT%{_libdir}/%{name}/register
 
 %if %{with enigmail}
 ext_dir=$RPM_BUILD_ROOT%{_libdir}/%{name}/extensions/\{847b3a00-7ab1-11d4-8f02-006008948af5\}
-install -d $ext_dir/{chrome,components,defaults/preferences}
+install -d $ext_dir/{chrome,components,defaults/preferences,modules}
 cd mozilla/dist/bin
-#cp -rfLp chrome/enigmail.jar $ext_dir/chrome
-#cp -rfLp chrome/enigmime.jar $ext_dir/chrome
+cp -rfLp chrome/enigmail.jar $ext_dir/chrome
 cp -rfLp components/enig* $ext_dir/components
 cp -rfLp components/libenigmime.so $ext_dir/components
-cp -rfLp components/libipc.so $ext_dir/components
-cp -rfLp components/ipc.xpt $ext_dir/components
 cp -rfLp defaults/preferences/enigmail.js $ext_dir/defaults/preferences
+cp -rfLp modules/{commonFuncs,enigmailCommon,keyManagement,pipeConsole,subprocess}.jsm $ext_dir/modules
+cp -rfLp modules/{subprocess_worker_unix,subprocess_worker_win}.js $ext_dir/modules
 cd -
 cp -p %{topdir}/mozilla/mailnews/extensions/enigmail/package/install.rdf $ext_dir
 cp -p %{topdir}/mozilla/mailnews/extensions/enigmail/package/chrome.manifest $ext_dir/chrome.manifest
@@ -468,6 +480,7 @@ exit 0
 %attr(755,root,root) %{_libdir}/%{name}/thunderbird
 %attr(755,root,root) %{_libdir}/%{name}/register
 %if %{without xulrunner}
+%{_libdir}/%{name}/dependentlibs.list
 %{_libdir}/%{name}/platform.ini
 %{_libdir}/%{name}/greprefs.js
 %attr(755,root,root) %{_libdir}/%{name}/components/*.so
@@ -501,6 +514,15 @@ exit 0
 %{_datadir}/%{name}/extensions
 %{_datadir}/%{name}/isp
 %{_datadir}/%{name}/modules
+%if %{with enigmail}
+%exclude %{_datadir}/%{name}/modules/commonFuncs.jsm
+%exclude %{_datadir}/%{name}/modules/enigmailCommon.jsm
+%exclude %{_datadir}/%{name}/modules/keyManagement.jsm
+%exclude %{_datadir}/%{name}/modules/pipeConsole.jsm
+%exclude %{_datadir}/%{name}/modules/subprocess.jsm
+%exclude %{_datadir}/%{name}/modules/subprocess_worker_unix.js
+%exclude %{_datadir}/%{name}/modules/subprocess_worker_win.js
+%endif
 %{_datadir}/%{name}/searchplugins
 %if %{without xulrunner}
 %{_datadir}/%{name}/res
@@ -551,4 +573,7 @@ exit 0
 %attr(755,root,root) %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.so
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.xpt
 %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/components/*.js
+%dir %{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/modules
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/modules/*.jsm
+%{_libdir}/%{name}/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}/modules/*.js
 %endif
