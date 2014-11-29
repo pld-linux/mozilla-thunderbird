@@ -7,6 +7,7 @@
 %bcond_with	gtk3		# GTK+ 3.x instead of 2.x
 %bcond_without	ldap		# disable e-mail address lookups in LDAP directories
 %bcond_without	lightning	# disable Sunbird/Lightning calendar
+%bcond_with	shared_js	# shared libmozjs library [broken]
 %bcond_with	xulrunner	# system xulrunner
 %bcond_with	crashreporter	# report crashes to crash-stats.mozilla.com
 
@@ -27,24 +28,21 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	24.8.1
+Version:	31.2.0
 Release:	1
 License:	MPL v2.0
 Group:		X11/Applications/Mail
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
-# Source0-md5:	24f90b2a2da3b0eee1ffc527bcf765a8
+# Source0-md5:	6bb66f5cb67d573939d4e2ead6f7c7ca
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
-Patch2:		%{name}-sh.patch
-Patch3:		%{name}-fonts.patch
 Patch6:		%{name}-prefs.patch
 Patch7:		%{name}-system-mozldap.patch
 Patch8:		%{name}-makefile.patch
 Patch12:	%{name}-no-subshell.patch
 # Edit patch below and restore --system-site-packages when system virtualenv gets 1.7 upgrade
 Patch13:	%{name}-system-virtualenv.patch
-Patch14:	%{name}-gyp-slashism.patch
 Patch15:	%{name}-enable-addons.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	GConf2-devel >= 1.2.1
@@ -145,16 +143,13 @@ dodające funkcjonalność kalendarza.
 
 %prep
 %setup -qc
-mv comm-esr24 mozilla
+mv comm-esr31 mozilla
 cd mozilla
-%patch2 -p1
-%patch3 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p2
 %patch12 -p1
 %patch13 -p1
-%patch14 -p1
 %patch15 -p1
 
 %build
@@ -237,7 +232,7 @@ ac_add_options --disable-ldap
 ac_add_options --enable-libxul
 ac_add_options --enable-pango
 ac_add_options --enable-postscript
-ac_add_options --enable-shared-js
+%{?with_shared_js:ac_add_options --enable-shared-js}
 ac_add_options --enable-single-profile
 ac_add_options --enable-startup-notification
 ac_add_options --enable-system-cairo
@@ -385,7 +380,7 @@ exit 0
 %{_libdir}/%{name}/platform.ini
 %attr(755,root,root) %{_libdir}/%{name}/components/*.so
 %attr(755,root,root) %{_libdir}/%{name}/libmozalloc.so
-%attr(755,root,root) %{_libdir}/%{name}/libmozjs.so
+%{?with_shared_js:%attr(755,root,root) %{_libdir}/%{name}/libmozjs.so}
 %attr(755,root,root) %{_libdir}/%{name}/libxul.so
 %attr(755,root,root) %{_libdir}/%{name}/mozilla-xremote-client
 %attr(755,root,root) %{_libdir}/%{name}/plugin-container
