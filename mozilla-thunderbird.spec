@@ -28,23 +28,24 @@
 Summary:	Thunderbird Community Edition - email client
 Summary(pl.UTF-8):	Thunderbird Community Edition - klient poczty
 Name:		mozilla-thunderbird
-Version:	31.4.0
+Version:	31.7.0
 Release:	1
 License:	MPL v2.0
 Group:		X11/Applications/Mail
 Source0:	http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/%{version}/source/thunderbird-%{version}.source.tar.bz2
-# Source0-md5:	da9c86271bb498c5feb02ce9c360669f
+# Source0-md5:	dcf14a6d4aaba2f695a1ec30c296e356
 Source2:	%{name}.png
 Source4:	%{name}.desktop
 Source5:	%{name}.sh
-Patch6:		%{name}-prefs.patch
-Patch7:		%{name}-system-mozldap.patch
-Patch8:		%{name}-makefile.patch
-Patch12:	%{name}-no-subshell.patch
+Patch2:		%{name}-prefs.patch
+Patch3:		%{name}-system-mozldap.patch
+Patch4:		%{name}-makefile.patch
+Patch6:		%{name}-no-subshell.patch
 # Edit patch below and restore --system-site-packages when system virtualenv gets 1.7 upgrade
-Patch13:	%{name}-system-virtualenv.patch
-Patch15:	%{name}-enable-addons.patch
-Patch16:	%{name}-bump-nss-req.patch
+Patch7:		%{name}-system-virtualenv.patch
+Patch8:		%{name}-enable-addons.patch
+Patch9:		%{name}-bump-nss-req.patch
+Patch10:	%{name}-libvpx2.patch
 URL:		http://www.mozilla.org/projects/thunderbird/
 BuildRequires:	GConf2-devel >= 1.2.1
 BuildRequires:	alsa-lib-devel
@@ -66,7 +67,7 @@ BuildRequires:	libiw-devel
 # requires libjpeg-turbo implementing at least libjpeg 6b API
 BuildRequires:	libjpeg-devel >= 6b
 BuildRequires:	libjpeg-turbo-devel
-BuildRequires:	libpng-devel >= 1.4.1
+BuildRequires:	libpng-devel >= 2:1.6.10
 BuildRequires:	libstdc++-devel
 BuildRequires:	mozldap-devel
 BuildRequires:	nspr-devel >= 1:%{nspr_ver}
@@ -92,6 +93,7 @@ BuildRequires:	xulrunner-devel < 2:32
 Requires:	glib2 >= 1:2.20
 %{!?with_gtk3:Requires:	gtk+2 >= 2:2.14}
 %{?with_gtk3:Requires:	gtk+3 >= 3.0.0}
+Requires:	libpng >= 2:1.6.10
 Requires:	libvpx >= 1.3.0
 Requires:	myspell-common
 Requires:	nspr >= 1:%{nspr_ver}
@@ -149,13 +151,14 @@ dodające funkcjonalność kalendarza.
 %setup -qc
 %{__mv} comm-esr31 mozilla
 cd mozilla
+%patch2 -p1
+%patch3 -p1
+%patch4 -p2
 %patch6 -p1
 %patch7 -p1
-%patch8 -p2
-%patch12 -p1
-%patch13 -p1
-%patch15 -p1
-%patch16 -p2
+%patch8 -p1
+%patch9 -p2
+%patch10 -p1
 
 %build
 cd mozilla
