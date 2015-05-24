@@ -18,7 +18,7 @@
 %define		nspr_ver	4.10.6
 %define		nss_ver		3.17.0
 
-%define		xulrunner_ver	2:31.3.0
+%define		xulrunner_ver	2:31.7.0
 
 %if %{without xulrunner}
 # The actual sqlite version (see RHBZ#480989):
