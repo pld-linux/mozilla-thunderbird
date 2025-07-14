@@ -151,14 +151,14 @@ dodające funkcjonalność kalendarza.
 %setup -qc
 %{__mv} comm-esr31 mozilla
 cd mozilla
-%patch2 -p1
-%patch3 -p1
-%patch4 -p2
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p2
-%patch10 -p1
+%patch -P2 -p1
+%patch -P3 -p1
+%patch -P4 -p2
+%patch -P6 -p1
+%patch -P7 -p1
+%patch -P8 -p1
+%patch -P9 -p2
+%patch -P10 -p1
 
 %build
 cd mozilla
